@@ -24,7 +24,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
     
     K <- length(alphas) # number of clusters
-    Xu <- filter(df.trees, user==u) # all posts from user
+    Xu <- filter(df.trees, userint==u) # all posts from user
     
     logfactors <- rep(0,K)
     for (k in 1:K){
@@ -34,6 +34,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
     denominator <- sum(exp(logfactors))
     responsabilities_u <- exp(logfactors)/denominator
+    cat("\t\t", responsabilities_u)
     responsabilities_u
   }
   
@@ -41,18 +42,22 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # sum of E[lnp(X,Z|\theta)] likelihoods for all clusters and all users
     # given the current responsabilities
     # Note that the optimizations can be done separatedly
-    a <- resp_k[df.trees$user]
+    a <- resp_k[df.trees$userint]
     b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
     sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
   }
 
+  # In case users are string names, we give each user a unique integer id
+  # besides, ids are given according to the user frequency (though not necessary)
+  users <- names(sort(table(df.trees$user), decreasing = TRUE))
+  df.trees$userint <- match(df.trees$user, users)
+  U <- length(users)
+  
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
   
   K <- length(alphas)
-  users <- unique(df.trees$user)
-  U <- length(users)
   
   responsabilities <- matrix(nrow = U, ncol = K)
   pis <- rep(1/ncol(responsabilities), ncol(responsabilities))
@@ -65,9 +70,9 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # Given the parameters of each cluster, find the responsability of each user in each cluster 
     #################################################################
     # (this can be parallelizable)
-    for (u in 1:U){
+    for (u in 1:100){
       cat('\n u:', u, " ", users[u])
-      responsabilities[u,] <- update_responsabilities(df.trees, users[u], pis, alphas, betas, taus)  
+      responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
     }
     cat("\nCluster distribution:\n", colSums(responsabilities))
     
@@ -113,6 +118,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
        betas=betas,
        taus=taus,
        responsabilities=responsabilities,
-       traces=traces)
+       traces=traces,
+       users=users)
   
 }
