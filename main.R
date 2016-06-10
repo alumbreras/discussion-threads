@@ -8,6 +8,7 @@ source('R/estimate_parameters.R')
 # Load dataframe representation of trees
 trees <- load_trees(forum="reddit", subforum="gameofthrones")
 df.trees <- trees_to_dataframe(trees)
+#save(trees, file='trees.gof.rda')
 #save(df.trees, file='df.trees.gof.rda')
 
 

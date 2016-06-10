@@ -3,4 +3,9 @@
 .RData
 *reddit.db
 *~
+
+# Large files such as database, or big R objects
+*data
+
+# Work in progress
 *paper
