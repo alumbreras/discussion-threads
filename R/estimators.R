@@ -19,6 +19,10 @@ estimation_Gomez2013 <- function(df.trees, params=c(0.5,0.5,0.5)){
 #' @param params list of initial parameters
 #' @return list of final parameters
 estimation_Lumbreras2016 <- function(df.trees, params){
+  stopifnot(all(params$taus<=1))
+  stopifnot(all(params$alphas > 0))
+  stopifnot(all(params$betas > 0))
+  stopifnot(all(params$taus > 0))
   
   update_responsabilities <- function(df.trees, u, pis, alphas, betas, taus){
     # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
@@ -70,7 +74,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # Given the parameters of each cluster, find the responsability of each user in each cluster 
     #################################################################
     # (this can be parallelizable)
-    for (u in 1:100){
+    for (u in 1:U){
       cat('\n u:', u, " ", users[u])
       responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
     }
