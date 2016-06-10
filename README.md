@@ -37,12 +37,6 @@ figures to analyse their properties:
   * x: subtree sizes y: probabilities (log-log)
   * x: size y: depth (log-log)
 
-
-**em.R**
-
-Runs the Expectation-Maximization algorithm to estimate the cluster assignments and the parameters $\alpha_k, \beta_k, \tau_k$ of each cluster.
-
-
 #### Other scripts
 
 **estimate_params_Gomez2013.r**:
