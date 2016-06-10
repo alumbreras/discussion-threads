@@ -43,7 +43,7 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities){
   taus <- params$taus
   like <- 0
   K <- length(alphas)
-  for(i in 1:K){
+  for(k in 1:K){
     a <- responsabilities[,k][df.trees$user]
     b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
     like <- like + sum(a*b) # each likelihood b is weighted according to how much the user belong to the cluster
