@@ -11,6 +11,9 @@ df.trees <- trees_to_dataframe(trees)
 #save(trees, file='trees.gof.rda')
 #save(df.trees, file='df.trees.gof.rda')
 
+# Subset for testing purposes
+trees <- trees[1:1000]
+df.trees <- trees_to_dataframe(trees)
 
 # Estimate parameters
 # Gomez 2013: 

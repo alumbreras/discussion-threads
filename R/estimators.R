@@ -48,7 +48,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
 
   alphas <- params$alphas
   betas <- params$betas
-  tau <- params$taus
+  taus <- params$taus
   
   K <- length(alphas)
   users <- unique(df.trees$user)
@@ -66,11 +66,12 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     #################################################################
     # (this can be parallelizable)
     for (u in 1:U){
+      cat('\n u:', u)
       responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
     }
     
     #print(responsabilities)
-    cat("Best vectors:\n", apply(responsabilities, 1, which.max))
+    cat("Cluster distribution:\n", colSums(responsabilities))
     
     # MAXIMIZATION
     # Given the current responsabilities and pis, find the best parameters for each cluster
