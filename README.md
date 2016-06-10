@@ -22,7 +22,7 @@ Main script that call controls the pipeline of subscripts.
 * estimation_Gomez2013()
 * estimation_Lumbreras2016()
 
-** likelihoods.R **
+**likelihoods.R**
 
 * likelihood_post()
 * likelihood_Gomez2013()
