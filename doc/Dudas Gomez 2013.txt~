@@ -1,0 +1,23 @@
+1) Estamos contando al root como si tuviera padre?
+
+pág. 652, Eq (2). Como m empieza en 2, nunca se cuenta el padre del primer nodo, que es evidentemente el root.
+Sin embargo el "1 +", que introduce el padre de cada nodo, permite compensarlo, con lo cual al root nunca se le cuenta el padre que no tiene.
+
+En cualquier caso, la suma de grados entre los nodos existentes es siempre impar por culpa del root.
+Pero en ese caso, en la p. 654 eq(5), en 
+
+2alpha(t-1) 
+
+cuenta dos veces por cada nodo y siempre es par! Debería ser entonces 
+
+alpha(t-1) + alpha*t  
+
+que es también:
+
+2alpha*t - 1
+
+o me pierdo algo? Tengo la impresión que en 2alpha(t-1), que es 2alpha*t - 2alpha, pretende ignorar la existencia del root, o al menos de su primer hijo. Pero si se pretende que el primer hijo no añade atractivo al root, debería modificarse Eq(2), no?
+
+O dicho aún de otra manera: d_{1,1}=1 o 0?
+
+========================

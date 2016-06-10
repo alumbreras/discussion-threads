@@ -1,0 +1,30 @@
+1) Estamos contando al root como si tuviera padre?
+
+pág. 652, Eq (2). Como m empieza en 2, nunca se cuenta el padre del primer nodo, que es evidentemente el root.
+Sin embargo el "1 +", que introduce el padre de cada nodo, permite compensarlo, con lo cual al root nunca se le cuenta el padre que no tiene.
+
+En cualquier caso, la suma de grados entre los nodos existentes es siempre impar por culpa del root.
+Pero en ese caso, en la p. 654 eq(5), en 
+
+2alpha(t-1) 
+
+cuenta dos veces por cada nodo y siempre es par! Debería ser entonces 
+
+alpha(t-1) + alpha*t  
+
+que es también:
+
+2alpha*t - 1
+
+o me pierdo algo? Tengo la impresión que en 2alpha(t-1), que es 2alpha*t - 2alpha, pretende ignorar la existencia del root, o al menos de su primer hijo. Pero si se pretende que el primer hijo no añade atractivo al root, debería modificarse Eq(2), no?
+
+O dicho aún de otra manera: d_{1,1}=1 o 0?
+
+========================
+
+
+ eq. 8: Pourquoi il n'y a pas de log sur Phi(...) ? (c'est vrait que j'ai simulé des threads avec son modèle, et j'ai maximisé les paramètres sans utiliser le log, et ça marche... mais je ne suis pas sure.
+  Est-ce que maximiser log(a+b) est similaire a maximiser a + log(b) ?
+
+- (important) Et surtout, il dit qu'ils minimisent l'eq. (8) mais ils ne donnent pas de détails? Comment on sait que la fonction est convexe? Est-il important de le savoir? Quelle méthode choisir? (avec leur modèle Gomez 2011 il parlent de Nelder-Mead, mais a Gómez 2013 ils n'en parlent plus, et je ne comprend pas pourquoi... est-ce que ce n'est pas du tout important?)
+
