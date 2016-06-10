@@ -21,3 +21,7 @@ estimation takes < 10 mins
 [1] -205646.2
 
 * likelihood.lumbreras
+alphas:  0.06934608
+betas:  3.624098
+taus:  0.9105457
+ likelihood:  -205646.2

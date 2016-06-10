@@ -69,9 +69,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
       cat('\n u:', u)
       responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
     }
-    
-    #print(responsabilities)
-    cat("Cluster distribution:\n", colSums(responsabilities))
+    cat("\nCluster distribution:\n", colSums(responsabilities))
     
     # MAXIMIZATION
     # Given the current responsabilities and pis, find the best parameters for each cluster
