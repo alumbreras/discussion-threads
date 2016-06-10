@@ -66,8 +66,8 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     #################################################################
     # (this can be parallelizable)
     for (u in 1:U){
-      cat('\n u:', u)
-      responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
+      cat('\n u:', u, " ", users[u])
+      responsabilities[u,] <- update_responsabilities(df.trees, users[u], pis, alphas, betas, taus)  
     }
     cat("\nCluster distribution:\n", colSums(responsabilities))
     
