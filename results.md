@@ -25,3 +25,12 @@ alphas:  0.06934608
 betas:  3.624098
 taus:  0.9105457
  likelihood:  -205646.2
+
+##### k=2 init 2 clusters with same parameters
+Cluster distribution:
+ 8216 8216
+
+alphas:  0.06934608 0.06934608
+betas:  3.624098 3.624098
+taus:  0.9105457 0.9105457
+ likelihood:  -205646.2
