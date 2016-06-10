@@ -38,7 +38,7 @@ cat('\n', params.lumbreras)
 
 alphas <- c(0.1,0.7, 0.5)
 betas <- c(0.1,0.7,3)
-taus <- c(0.1,0.7,1.5)
+taus <- c(0.1,0.7,0.1)
 params <- list(alphas=alphas, betas=betas, taus=taus)
 params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
 cat('\n', params.gomez)
