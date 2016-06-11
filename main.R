@@ -34,7 +34,10 @@ taus <- 0.5
 params <- list(alphas=alphas, betas=betas, taus=taus)
 params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
 cat('\n', params.gomez)
-cat('\n', params.lumbreras)
+cat('\n alphas: ', params.lumbreras$alphas)
+cat('\n betas: ', params.lumbreras$betas)
+cat('\n taus: ', params.lumbreras$taus)
+
 
 alphas <- c(0.1,0.7, 0.5)
 betas <- c(0.1,0.7,3)

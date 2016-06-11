@@ -41,15 +41,13 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     }
     
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
-    denominator <- sum(exp(logfactors))
-    responsabilities_u <- exp(logfactors)/denominator
+    responsabilities_u <- exp(logfactors)/sum(exp(logfactors))
     responsabilities_u
   }
   
   Qopt <- function(params, resp_k, df.trees){
-    # sum of E[lnp(X,Z|\theta)] likelihoods for all clusters and all users
+    # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
     # given the current responsabilities
-    # Note that the optimizations can be done separatedly
     a <- resp_k[df.trees$userint]
     b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
     sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
@@ -107,6 +105,9 @@ estimation_Lumbreras2016 <- function(df.trees, params){
       taus[k]   <-  sol$par[3]
       traces[iter,k] <- sol$value
     }
+    params$alphas <- alphas
+    params$betas <- betas
+    params$taus <- taus
     
     
     # Update pis
@@ -116,10 +117,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # EVALUATION OF FULL LIKELIHOOD p(X, Z | \theta)
     # this should be monotonically increasing
     ###############################################################
-    params$alphas <- alphas
-    params$betas <- betas
-    params$taus <- taus
-    like <- likelihood_Lumbreras2016(df.trees, params, responsabilities)
+    like <- likelihood_Lumbreras2016(df.trees, params, responsabilities, pis)
     likes[iter] <- c(t(pis) %*% traces[iter,])
     cat("\n\nalphas: ", alphas)
     cat("\nbetas: ", betas)
