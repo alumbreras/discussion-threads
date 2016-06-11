@@ -37,7 +37,8 @@ likelihood_Gomez2013 <- function(df.trees, params){
 #' @param responsabilities responsabilities of users w.r.t clusters
 #' @return loglikelihood of the dataset
 #' @export
-likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities){
+likelihood_Lumbreras2016.wrong <- function(df.trees, params, responsabilities){
+  "This is wrong because a pi factor is missing (a priori probabilities)"
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
@@ -47,6 +48,20 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities){
     a <- responsabilities[,k][df.trees$user]
     b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
     like <- like + sum(a*b) # each likelihood b is weighted according to how much the user belong to the cluster
+  }
+  like
+}
+
+likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
+  alphas <- params$alphas
+  betas <- params$betas
+  taus <- params$taus
+  like <- 0
+  K <- length(alphas)
+  for(k in 1:K){
+    a <- responsabilities[,k][df.trees$userint]
+    b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
+    like <- like + sum(a*b) + pis[k] # each likelihood b is weighted according to how much the user belong to the cluster
   }
   like
 }
