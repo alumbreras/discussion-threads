@@ -24,6 +24,11 @@ estimation_Lumbreras2016 <- function(df.trees, params){
   stopifnot(all(params$betas > 0))
   stopifnot(all(params$taus > 0))
   
+  # Set up cluster for parallelisation
+  ncores <- detectCores() - 2
+  cl <- makeCluster(ncores, outfile="", port=11439)
+  registerDoParallel(cl)    
+  
   update_responsabilities <- function(df.trees, u, pis, alphas, betas, taus){
     # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
     
@@ -63,42 +68,46 @@ estimation_Lumbreras2016 <- function(df.trees, params){
   
   K <- length(alphas)
   
-  responsabilities <- matrix(nrow = U, ncol = K)
+  responsabilities <- matrix(1/K, nrow = U, ncol = K)
   pis <- rep(1/ncol(responsabilities), ncol(responsabilities))
   
-  niters <- 2
+  niters <- 15
   traces <- matrix(0, nrow=niters, ncol=K)
+  likes <- rep(NA, iters)
   for(iter in 1:niters){
     cat("\n**********ITERATION**********: ", iter, "\n")
     # EXPECTATION
     # Given the parameters of each cluster, find the responsability of each user in each cluster 
     #################################################################
-    # (this can be parallelizable)
-    for (u in 1:U){
-      cat('\n u:', u, " ", users[u])
-      responsabilities[u,] <- update_responsabilities(df.trees, u, pis, alphas, betas, taus)  
-    }
+    responsabilities <- foreach(u=1:U, .packages=c('dplyr'), .combine=rbind) %dopar%
+                            update_responsabilities(df.trees, u, pis, alphas, betas, taus)
+    
     cat("\nCluster distribution:\n", colSums(responsabilities))
     
     # MAXIMIZATION
     # Given the current responsabilities and pis, find the best parameters for each cluster
     ################################################################
+
+    # Parallel optimization for cluster k=1,...,K
+    # neldermead::fminbnd does not deal well with boundaries
+    # nlminb and nmkb give the same solution.
+    # nmkb is a little bit faster
+    # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
+    #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
+    sols <- foreach(k=1:K, .packages=c('dfoptim')) %dopar% {
+                    nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
+                                lower = c(0,0,0), upper = c(Inf, Inf, 1), 
+                                control = list(maximize=TRUE),
+                                resp_k = responsabilities[,k], df.trees = df.trees)
+    }
     for(k in 1:K){
-      # Optimization for cluster k
-      # neldermead::fminbnd does not deal well with boundaries
-      # nlminb and nmkb give the same solution.
-      # nmkb is a little bit faster
-      # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
-      #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
-      sol <- nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
-                  lower = c(0,0,0), upper = c(Inf, Inf, 1), 
-                  control = list(maximize=TRUE),
-                  resp_k = responsabilities[,k], df.trees = df.trees)
+      sol <- sols[[k]]
       alphas[k] <- sol$par[1]
       betas[k]  <-  sol$par[2]
       taus[k]   <-  sol$par[3]
       traces[iter,k] <- sol$value
     }
+    
     
     # Update pis
     pis <- colSums(responsabilities)/nrow(responsabilities)
@@ -111,18 +120,21 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     params$betas <- betas
     params$taus <- taus
     like <- likelihood_Lumbreras2016(df.trees, params, responsabilities)
-      
+    likes[iter] <- c(t(pis) %*% traces[iter,])
     cat("\n\nalphas: ", alphas)
     cat("\nbetas: ", betas)
     cat("\ntaus: ", taus)
     cat("\n likelihood: ", like)
   }
   
+  stopCluster(cl)
+  
   list(alphas=alphas,
        betas=betas,
        taus=taus,
        responsabilities=responsabilities,
        traces=traces,
+       likes=like,
        users=users)
   
 }
