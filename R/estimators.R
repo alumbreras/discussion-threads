@@ -43,7 +43,6 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
     denominator <- sum(exp(logfactors))
     responsabilities_u <- exp(logfactors)/denominator
-    cat("\t\t", responsabilities_u)
     responsabilities_u
   }
   
@@ -79,7 +78,8 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # EXPECTATION
     # Given the parameters of each cluster, find the responsability of each user in each cluster 
     #################################################################
-    responsabilities <- foreach(u=1:U, .packages=c('dplyr'), .combine=rbind) %dopar%
+    cat("\nExpectation...")
+    responsabilities <- foreach(u=1:U, .packages=c('dplyr'), .export=c('likelihood_post'), .combine=rbind) %dopar%
                             update_responsabilities(df.trees, u, pis, alphas, betas, taus)
     
     cat("\nCluster distribution:\n", colSums(responsabilities))
@@ -87,14 +87,14 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     # MAXIMIZATION
     # Given the current responsabilities and pis, find the best parameters for each cluster
     ################################################################
-
+    cat("\nMaximization...")
     # Parallel optimization for cluster k=1,...,K
     # neldermead::fminbnd does not deal well with boundaries
     # nlminb and nmkb give the same solution.
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
-    sols <- foreach(k=1:K, .packages=c('dfoptim')) %dopar% {
+    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post')) %dopar% {
                     nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
                                 lower = c(0,0,0), upper = c(Inf, Inf, 1), 
                                 control = list(maximize=TRUE),
