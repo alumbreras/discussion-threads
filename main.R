@@ -43,7 +43,7 @@ params <- list(alphas=alphas, betas=betas, taus=taus)
 params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
 cat('\n', params.gomez)
 cat('\n', params.lumbreras)
-
+plot(rowSums(params.lumbreras$traces))
 
 
 
