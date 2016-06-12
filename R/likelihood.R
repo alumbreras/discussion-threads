@@ -30,6 +30,29 @@ likelihood_Gomez2013 <- function(df.trees, params){
   sum(apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3])))
 }
 
+#' The part of the lower bound that we optimize in the M-step
+Qopt <- function(params, df.trees, responsabilities, pis, cluster=k){
+  # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
+  # given the current responsabilities
+  # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to 
+  # the complete Q equation
+  a <- responsabilities[,k][df.trees$userint]
+  b <- log(pis[k]) + apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  
+  sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
+}
+
+#' The part of the lower bound that we optimize in the M-step
+# debug
+Qopt <- function(params, df.trees, responsabilities, pis, cluster=k){
+  a <- responsabilities[,k][df.trees$userint]
+  b <- log(pis[k]) + apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  
+  sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
+}
+
 
 #' Total likelihood of a dataframe according to Lumbreras2016
 #' @param df.trees data.frame with one post per row and features in columns
@@ -37,35 +60,67 @@ likelihood_Gomez2013 <- function(df.trees, params){
 #' @param responsabilities responsabilities of users w.r.t clusters
 #' @return loglikelihood of the dataset
 #' @export
-likelihood_Lumbreras2016.wrong <- function(df.trees, params, responsabilities){
-  "This is wrong because a pi factor is missing (a priori probabilities)"
-  alphas <- params$alphas
-  betas <- params$betas
-  taus <- params$taus
-  like <- 0
-  K <- length(alphas)
-  for(k in 1:K){
-    a <- responsabilities[,k][df.trees$user]
-    b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
-    like <- like + sum(a*b) # each likelihood b is weighted according to how much the user belong to the cluster
-  }
-  like
-}
-
 likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
   like <- 0
   K <- length(alphas)
-  for(k in 1:K){
-    a <- responsabilities[,k][df.trees$userint]
-    b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
-    like <- like + sum(a*b) + pis[k] # each likelihood b is weighted according to how much the user belong to the cluster
+  
+  # Q (see Bishop Eq. 9.40, p.443)
+  Q <- 0
+  U <- length(unique(df.trees$userint))
+  
+  # before
+  #for(k in 1:K){
+  #  Q <- Q + Qopt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, cluster=k)
+  #}
+  
+  # it works!
+  for(u in 1:U){
+    Xu <- filter(df.trees, userint==u) # all posts from user
+    for(k in 1:K){
+      Q <- Q + responsabilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k]))) 
+    }
+  }
+  
+  # Entropy of the posterior
+  entropy <- -sum(responsabilities*log(responsabilities))
+
+  # Eq. 9.74, p.452
+  like <- Q + entropy
+  cat("\nQ: ", Q)
+  cat("\nH: ", entropy, '\n')
+  like
+}
+
+
+#'Total likelihood of a dataframe using hard assignments from the EM
+#' @param df.trees data.frame with one post per row and features in columns
+#' @param model parameters
+#' @param responsabilities responsabilities of users w.r.t clusters
+#' @return loglikelihood of the dataset
+#' @export
+likelihood_Lumbreras2016.hard <- function(df.trees, params, responsabilities){
+  "This is wrong because a pi factor is missing (a priori probabilities)"
+  alphas <- params$alphas
+  betas <- params$betas
+  taus <- params$taus
+  z <- apply(responsabilities, 1, which.max)
+  like <- 0
+  for (i in 1:nrow(df.trees)){
+    row <- df.trees[i,]
+    k <- z[row$userint]
+    like <- like + likelihood_post(df.trees[i, -2], alphas[k], betas[k], taus[k])
   }
   like
 }
 
+
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
 #' Deprecated b/c it uses igraph keep it just for testing
 #' @param trees list of trees
 #' @param alpha popularity parameter 
@@ -73,7 +128,7 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
 #' @param tau recency parameter
 #' @return loglikelihood of the dataset
 #' @export
-likelihood.Gomez2013 <- function(trees, alpha=1, beta = 1, tau = 0.75){
+likelihood.Gomez2013.deprecated <- function(trees, alpha=1, beta = 1, tau = 0.75){
   # Compute the likelihood of the whole set of trees
   # Arguments:
   #   trees: observed list of trees
