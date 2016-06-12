@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 *reddit.db
+*.out
 *~
 
 # Large files such as database, or big R objects
@@ -9,6 +10,6 @@ data/
 
 # Work in progress
 *paper
-
+doc/
 # Directory were I have some scripts to test small things during coding
 sandbox/

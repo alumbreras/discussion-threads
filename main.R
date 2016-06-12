@@ -46,13 +46,32 @@ params <- list(alphas=alphas, betas=betas, taus=taus)
 params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
 cat('\n', params.gomez)
 cat('\n', params.lumbreras)
-plot(rowSums(params.lumbreras$traces))
-
+plot(rowSums(params.lumbreras$traces), type='b')
+title('\n Likelihood')
 
 
 # Compare likelihood Gomez2013 and Lumbreras2016 over the trees
 likelihood.gomez <- likelihood_Gomez2013(df.trees, params.gomez)
-likelihood.lumbreras <- likelihood_Lumbreras2016(df.trees, params.lumbreras, params.lumbreras$responsabilities)
+likelihood.lumbreras <- likelihood_Lumbreras2016(df.trees, params.lumbreras, 
+                                                 params.lumbreras$responsabilities, params.lumbreras$pis)
+
+
+
+# Lumbreras K=1
+alphas <- 0.5
+betas <- 0.5
+taus <- 0.5
+params <- list(alphas=alphas, betas=betas, taus=taus)
+params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
+likelihood.lumbreras <- likelihood_Lumbreras2016(df.trees, params.lumbreras, 
+                                                 params.lumbreras$responsabilities, params.lumbreras$pis)
+
+#likelihood: -1191
+# Lumbreras K=2
+
+# Lumbreras K=3
+
+# Lumbreras K=4
 
 # Generate artificial trees under  Gomez 2013 and Lumbreras2016
 trees.gomez <- generate_trees(model='Gomez2013', params=params.gomez)

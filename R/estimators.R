@@ -18,7 +18,7 @@ estimation_Gomez2013 <- function(df.trees, params=c(0.5,0.5,0.5)){
 #' @param df.trees dataframe of posts
 #' @param params list of initial parameters
 #' @return list of final parameters
-estimation_Lumbreras2016 <- function(df.trees, params){
+estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
   stopifnot(all(params$taus<=1))
   stopifnot(all(params$alphas > 0))
   stopifnot(all(params$betas > 0))
@@ -45,20 +45,8 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     responsabilities_u
   }
   
-  Qopt <- function(params, resp_k, df.trees){
-    # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
-    # given the current responsabilities
-    a <- resp_k[df.trees$userint]
-    b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-    sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
-  }
 
-  # In case users are string names, we give each user a unique integer id
-  # besides, ids are given according to the user frequency (though not necessary)
-  users <- names(sort(table(df.trees$user), decreasing = TRUE))
-  df.trees$userint <- match(df.trees$user, users)
-  U <- length(users)
-  
+  U <- length(unique(df.trees$userint))
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
@@ -68,9 +56,8 @@ estimation_Lumbreras2016 <- function(df.trees, params){
   responsabilities <- matrix(1/K, nrow = U, ncol = K)
   pis <- rep(1/ncol(responsabilities), ncol(responsabilities))
   
-  niters <- 15
   traces <- matrix(0, nrow=niters, ncol=K)
-  likes <- rep(NA, iters)
+  likes <- rep(NA, niters)
   for(iter in 1:niters){
     cat("\n**********ITERATION**********: ", iter, "\n")
     # EXPECTATION
@@ -96,7 +83,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
                     nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
                                 lower = c(0,0,0), upper = c(Inf, Inf, 1), 
                                 control = list(maximize=TRUE),
-                                resp_k = responsabilities[,k], df.trees = df.trees)
+                                df.trees = df.trees, responsabilities = responsabilities, pis = pis, cluster=k)
     }
     for(k in 1:K){
       sol <- sols[[k]]
@@ -110,9 +97,6 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     params$taus <- taus
     
     
-    # Update pis
-    pis <- colSums(responsabilities)/nrow(responsabilities)
-    
     ###############################################################
     # EVALUATION OF FULL LIKELIHOOD p(X, Z | \theta)
     # this should be monotonically increasing
@@ -123,6 +107,14 @@ estimation_Lumbreras2016 <- function(df.trees, params){
     cat("\nbetas: ", betas)
     cat("\ntaus: ", taus)
     cat("\n likelihood: ", like)
+    cat("\n Q: ", sum(traces[iter,]))
+    cat("\n Q.sum: ", Q.sum)
+    cat('\n Q.total: ', Qopt.total(params, df.trees, responsabilities))
+    cat("\n Entropy: ", sum(responsabilities*log(responsabilities)))
+    cat("\n***")
+  
+    # Update pis
+    pis <- colSums(responsabilities)/nrow(responsabilities)  
   }
   
   stopCluster(cl)
@@ -131,6 +123,7 @@ estimation_Lumbreras2016 <- function(df.trees, params){
        betas=betas,
        taus=taus,
        responsabilities=responsabilities,
+       pis = pis,
        traces=traces,
        likes=like,
        users=users)
