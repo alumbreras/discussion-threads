@@ -33,35 +33,6 @@ pis <- c(0.5,0.5)
 # Compare likelihoods
 likelihood.gomez <- likelihood_Gomez2013(df.trees, params.gomez)
 likelihood.lumbreras <- likelihood_Lumbreras2016(df.trees, params.lumbreras, responsabilities, pis)
-#likelihood.lumbreras.hard <- likelihood_Lumbreras2016.hard(df.trees, params.lumbreras, responsabilities)
-cat("likelihood Gomez: ", likelihood.gomez)
-cat("likelihood Lumbreras: ", likelihood.lumbreras)
+likelihood.lumbreras.hard <- likelihood_Lumbreras2016.hard(df.trees, params.lumbreras, responsabilities)
 
 expect_that(likelihood.gomez, equals(likelihood.lumbreras))
-
-
-###############################################################################"""
-
-likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
-  alphas <- params$alphas
-  betas <- params$betas
-  taus <- params$taus
-  like <- 0
-  K <- length(alphas)
-  
-  # Q
-  for(k in 1:K){
-    a <- responsabilities[,k][df.trees$userint]
-    #b <- log(pis[k]) + apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
-    b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, alphas[k], betas[k], taus[k]))
-    like <- like + sum(a * b) # each likelihood b is weighted according to how much the user belong to the cluster
-  }
-  cat("\nlikelihood lumbreras: ", like, " ", sum(responsabilities*log(responsabilities)))
-  
-  # minus the entropy (se)
-  like <- like - sum(responsabilities*log(responsabilities))
-  like
-}
-
-# entropy?
-

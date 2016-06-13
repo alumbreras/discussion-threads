@@ -31,26 +31,15 @@ likelihood_Gomez2013 <- function(df.trees, params){
 }
 
 #' The part of the lower bound that we optimize in the M-step
-Qopt <- function(params, df.trees, responsabilities, pis, cluster=k){
+Qopt <- function(params, df.trees, responsabilities, pis, k){
   # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
   # given the current responsabilities
   # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to 
   # the complete Q equation
+  # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
   a <- responsabilities[,k][df.trees$userint]
-  b <- log(pis[k]) + apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-  
-  sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
-}
-
-#' The part of the lower bound that we optimize in the M-step
-# debug
-Qopt <- function(params, df.trees, responsabilities, pis, cluster=k){
-  a <- responsabilities[,k][df.trees$userint]
-  b <- log(pis[k]) + apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-  
-  sum(a*b) # each likelihood b is weighted according to how much dos the user belong to the cluster
+  b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
 
 
@@ -71,17 +60,16 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   Q <- 0
   U <- length(unique(df.trees$userint))
   
-  # before
-  #for(k in 1:K){
-  #  Q <- Q + Qopt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, cluster=k)
-  #}
   
-  # it works!
-  for(u in 1:U){
-    Xu <- filter(df.trees, userint==u) # all posts from user
-    for(k in 1:K){
-      Q <- Q + responsabilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k]))) 
-    }
+  # The next loop does the same than this one but in a vectorized way
+  #for(u in 1:U){
+  #  Xu <- filter(df.trees, userint==u) # all posts from user
+  #  for(k in 1:K){
+  #    Q <- Q + responsabilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k]))) 
+  #  }
+  #}
+  for(k in 1:K){
+    Q <- Q + Qopt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, k)
   }
   
   # Entropy of the posterior
@@ -90,7 +78,8 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   # Eq. 9.74, p.452
   like <- Q + entropy
   cat("\nQ: ", Q)
-  cat("\nH: ", entropy, '\n')
+  cat("\nH: ", entropy)
+  cat("\nTotal like: ", like, '\n')
   like
 }
 

@@ -81,7 +81,7 @@ generate_trees <- function(model, params, ntrees, sizes){
 
 
 
-tree.to.data <- function(g, thread=0){
+tree_to_data <- function(g, thread=0){
   # Creates a dataframe with a row per post
   # and columns "degree of parent", "is_parent_root", "lag to parent", and "t"
   # With the model parameters, the three first columns are used to compute the numerator the likelihood
@@ -116,9 +116,13 @@ trees_to_dataframe <- function(trees){
   # Create dataframes from trees
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
-  clusterEvalQ(cl, {library(igraph);library(dplyr);})
-  
-  data.parlapply <- parLapply(cl, trees, tree.to.data)
+  clusterEvalQ(cl, {
+    library(igraph)
+    library(dplyr)
+    })
+  clusterExport(cl, varlist=c("tree_to_data"))
+
+  data.parlapply <- parLapply(cl, trees, tree_to_data)
   stopCluster(cl)
   
   # join dataframes adding thread id

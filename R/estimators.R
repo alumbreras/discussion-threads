@@ -19,7 +19,7 @@ estimation_Gomez2013 <- function(df.trees, params=c(0.5,0.5,0.5)){
 #' @param params list of initial parameters
 #' @return list of final parameters
 estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
-  stopifnot(all(params$taus<=1))
+  stopifnot(all(params$taus<1))
   stopifnot(all(params$alphas > 0))
   stopifnot(all(params$betas > 0))
   stopifnot(all(params$taus > 0))
@@ -45,6 +45,7 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     responsabilities_u
   }
   
+
 
   U <- length(unique(df.trees$userint))
   alphas <- params$alphas
@@ -79,11 +80,11 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
-    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post')) %dopar% {
+    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post', 'Qopt')) %dopar% {
                     nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
                                 lower = c(0,0,0), upper = c(Inf, Inf, 1), 
                                 control = list(maximize=TRUE),
-                                df.trees = df.trees, responsabilities = responsabilities, pis = pis, cluster=k)
+                                df.trees = df.trees, responsabilities = responsabilities, pis = pis, k=k)
     }
     for(k in 1:K){
       sol <- sols[[k]]
@@ -108,8 +109,6 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     cat("\ntaus: ", taus)
     cat("\n likelihood: ", like)
     cat("\n Q: ", sum(traces[iter,]))
-    cat("\n Q.sum: ", Q.sum)
-    cat('\n Q.total: ', Qopt.total(params, df.trees, responsabilities))
     cat("\n Entropy: ", sum(responsabilities*log(responsabilities)))
     cat("\n***")
   
