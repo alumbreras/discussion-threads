@@ -1,7 +1,0 @@
-source("R/datasets.R")
-source("R/estimators.R")
-source("R/extract_from_db.R")
-source("R/plotting.R")
-source("R/plot_structural_properties.R")
-source('R/thread_generators.R')
-source('R/likelihood.R')
