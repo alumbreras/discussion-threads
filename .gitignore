@@ -4,6 +4,7 @@
 *reddit.db
 *.out
 *~
+results.md
 
 # Large files such as database, or big R objects
 data/
@@ -13,3 +14,4 @@ data/
 
 # Directory were I have some scripts to test small things during coding
 sandbox/
+
