@@ -61,8 +61,9 @@ params.lumbreras$z <- as.vector(apply(params.lumbreras$responsabilities, 1, whic
 # Generate artificial trees under  Gomez 2013 and Lumbreras2016 reproducing the real sizes
 # in Lumbreras2016, authors are chosen uniformly
 sizes <- sapply(trees, vcount)
+users <- df.trees$userint
 trees.gomez <- generate_trees(model='Gomez2013', params=params.gomez, sizes=sizes)
-trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras, sizes=sizes)
+trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras, sizes=sizes, user.sample=users)
 
 #save(trees.gomez, file = 'data/trees.gomez.rda')
 #save(trees.lumbreras, file = 'data/trees.lumbreras.rda')
