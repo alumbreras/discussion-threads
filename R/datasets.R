@@ -47,8 +47,7 @@ load_trees <- function(forum='reddit', subforum='gameofthrones'){
 #' @details The trees are generated in parallel
 #' @return a list of trees
 #' @export
-generate_trees <- function(model, params, ntrees, sizes){
-  
+generate_trees <- function(model, params, sizes){
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
   
@@ -57,10 +56,10 @@ generate_trees <- function(model, params, ntrees, sizes){
     beta <- params[2]
     tau <- params[3]
 
-    clusterEvalQ(cl, {library(igraph); source('R/thread_generators.r')})
-    clusterExport(cl, c("alphas", "betas", "taus", "z"))
+    clusterEvalQ(cl, {library(igraph); source('R/thread_generators.R')})
+    clusterExport(cl, c("alpha", "beta", "tau"), envir = environment())
     
-    trees <- parLapply(cl, 1:ntrees, function(i) gen.thread.Gomez2013(n=100, alpha=alpha, beta = beta, tau=tau))
+    trees <- parLapply(cl, sizes, function(i) gen.thread.Gomez2013(n=i, alpha=alpha, beta = beta, tau=tau))
   }
   
   if(model=='Lumbreras2016'){
@@ -69,10 +68,9 @@ generate_trees <- function(model, params, ntrees, sizes){
     taus <- params$taus
     z <- params$z
     
-    clusterEvalQ(cl, {library(igraph); source('R/thread_generators.r')})
-    clusterExport(cl, c("alphas", "betas", "taus", "z"))
-    
-    trees <- parLapply(cl, 1:ntrees, function(i) gen.thread.Lumbreras2016(n=25, z=z, alphas=alphas, betas=betas, taus=taus) )
+    clusterEvalQ(cl, {library(igraph); source('R/thread_generators.R')})
+    clusterExport(cl, varlist= c("alphas", "betas", "taus", "z"), envir = environment())
+    trees <- parLapply(cl, sizes, function(i) gen.thread.Lumbreras2016(n=i, z=z, alphas=alphas, betas=betas, taus=taus) )
   }
   
   stopCluster(cl)

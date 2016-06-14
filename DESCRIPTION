@@ -1,0 +1,10 @@
+Package: threads
+Title: Generative model for discussion threads
+Version: 0.0.0.9000
+Authors@R: person("Alberto", "Lumbreras", email = "alberto.lumbreras@gmail.com", role = c("aut", "cre"))
+Description: Generative model for discussion threads that finds groups of users with similar parameters via Expectation Maximization
+Depends:
+    R (>= 3.3.0)
+License: MIT
+LazyData: true
+RoxygenNote: 5.0.1

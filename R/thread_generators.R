@@ -1,7 +1,6 @@
 # Generates artificial threads with models of Gomez 2010 and Gomez 2013
 # author: Alberto Lumbreras
 ################################
-
 library(igraph)
 library(dplyr)
 
