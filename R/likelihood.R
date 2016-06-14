@@ -7,13 +7,13 @@ library(igraph)
 
 #' Likelihood computation using the dataframe
 #' @param row vector representing a post
-#' @param alpha popularity parameter 
+#' @param alpha popularity parameter
 #' @param beta root bias
 #' @param tau recency parameter
 #' @return loglikelihood of the post
 #' @export
 likelihood_post <- function(row, alpha, beta, tau){
-  (log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) - 
+  (log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) -
      log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1)))
   # -1/2 because root has at least degree 1 (to follow Gomez 2013)
   # if the root starts with degree 0, then it should be:
@@ -34,7 +34,7 @@ likelihood_Gomez2013 <- function(df.trees, params){
 Qopt <- function(params, df.trees, responsabilities, pis, k){
   # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
   # given the current responsabilities
-  # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to 
+  # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
   a <- responsabilities[,k][df.trees$userint]
@@ -55,28 +55,28 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   taus <- params$taus
   like <- 0
   K <- length(alphas)
-  
+
   # Q (see Bishop Eq. 9.40, p.443)
   Q <- 0
   U <- length(unique(df.trees$userint))
-  
-  
+
+
   # The next loop does the same than this one but in a vectorized way
   #for(u in 1:U){
   #  Xu <- filter(df.trees, userint==u) # all posts from user
   #  for(k in 1:K){
-  #    Q <- Q + responsabilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k]))) 
+  #    Q <- Q + responsabilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k])))
   #  }
   #}
   for(k in 1:K){
     Q <- Q + Qopt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, k)
   }
-  
+
   # Entropy of the posterior
-  entropies <- responsabilities*log(responsabilities)
-  entropies[is.na(entropies)] <- 0 
+  entropies <- -responsabilities*log(responsabilities)
+  entropies[is.na(entropies)] <- 0
   entropy <- sum(entropies)
-  
+
   # Eq. 9.74, p.452
   like <- Q + entropy
   cat("\nQ: ", Q)
@@ -114,7 +114,7 @@ likelihood_Lumbreras2016.hard <- function(df.trees, params, responsabilities){
 ########################################################################################
 #' Deprecated b/c it uses igraph keep it just for testing
 #' @param trees list of trees
-#' @param alpha popularity parameter 
+#' @param alpha popularity parameter
 #' @param beta root bias
 #' @param tau recency parameter
 #' @return loglikelihood of the dataset
@@ -128,14 +128,14 @@ likelihood.Gomez2013.deprecated <- function(trees, alpha=1, beta = 1, tau = 0.75
   for (i in 1:length(trees)){
     g <- trees[[i]]
     parents <- get.edgelist(g)[,2] # parents vector
-    
+
     # skip root and first post
     for(t in 2:length(parents)){
       b <- rep(0,t)
       b[1] <- beta
       lags <- t:1
       popularities <- 1 + tabulate(parents[1:(t-1)], nbins=t)
-      popularities[1] <- popularities[1] - 1 # root has no parent 
+      popularities[1] <- popularities[1] - 1 # root has no parent
       probs <- alpha*popularities + b + tau^lags
       probs <- probs/sum(probs)
       like <- like + log(probs[parents[t]])
