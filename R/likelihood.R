@@ -73,8 +73,10 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   }
   
   # Entropy of the posterior
-  entropy <- -sum(responsabilities*log(responsabilities))
-
+  entropies <- responsabilities*log(responsabilities)
+  entropies[is.na(entropies)] <- 0 
+  entropy <- sum(entropies)
+  
   # Eq. 9.74, p.452
   like <- Q + entropy
   cat("\nQ: ", Q)

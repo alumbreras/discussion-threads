@@ -1,5 +1,8 @@
 # Overview
 
+I'm trying to follow these ideas to adapt the concept of R packages for reproducible research
+https://github.com/ropensci/rrrpkg
+
 #### On how we represent discussion threads
 One of our main objects is a tree that represents a discussion thread. A tree is represented by an *igraph* object. We use this representation to plot trees and to compute structural properties such as degree distribution, size vs depth, and so on.
 

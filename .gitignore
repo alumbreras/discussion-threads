@@ -9,7 +9,7 @@
 data/
 
 # Work in progress
-*paper
-doc/
+# manuscript/
+
 # Directory were I have some scripts to test small things during coding
 sandbox/

@@ -1,4 +1,3 @@
-source('R/likelihood.R')
 library(dfoptim)
 
 estimation_Gomez2013 <- function(df.trees, params=c(0.5,0.5,0.5)){
