@@ -2,13 +2,14 @@
 # author: Alberto Lumbreras
 ###########################################################
 # Load dataframe representation of trees
-trees <- load_trees(forum="reddit", subforum="gameofthrones")
-df.trees <- trees_to_dataframe(trees)
+
+#trees <- load_trees(forum="reddit", subforum="gameofthrones")
+#df.trees <- trees_to_dataframe(trees)
 #save(trees, file='trees.gof.rda')
 #save(df.trees, file='df.trees.gof.rda')
-#load('data/trees.gof.rda')
-#load('data/df.trees.gof.rda')
 
+load('data/trees.gof.rda')
+load('data/df.trees.gof.rda')
 # Subset for testing purposes
 trees <- trees[1:1000]
 df.trees <- trees_to_dataframe(trees)
@@ -63,6 +64,12 @@ sizes <- sapply(trees, vcount)
 trees.gomez <- generate_trees(model='Gomez2013', params=params.gomez, sizes=sizes)
 trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras, sizes=sizes)
 
+#save(trees.gomez, file = 'data/trees.gomez.rda')
+#save(trees.lumbreras, file = 'data/trees.lumbreras.rda')
 
 # Compare genetared threads (plot degree distributions, etc)
-compare_trees(trees, trees.lumbreras)
+compare_trees(trees, trees.lumbreras, trees.gomez)
+
+
+# Compare how good are both models to make posts recommendations
+# (if we recommend the most likely parent)
