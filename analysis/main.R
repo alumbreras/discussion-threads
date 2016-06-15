@@ -11,30 +11,28 @@
 load('data/trees.gof.rda')
 load('data/df.trees.gof.rda')
 # Subset for testing purposes
-trees <- trees[1:1000]
-df.trees <- trees_to_dataframe(trees)
+
+#trees <- trees[1:1000]
+#df.trees <- trees_to_dataframe(trees)
 
 # In case users are string names, we give each user a unique integer id
 # besides, ids are given according to the user frequency (though not necessary)
 users <- names(sort(table(df.trees$user), decreasing = TRUE))
 df.trees$userint <- match(df.trees$user, users)
 
-# Estimate parameters
-# Gomez 2013:
-# alpha, beta, tau
-# Lumbreras 2016:
-# alpha_1, beta_1, tau_1
-# ...
-# alpha_1, beta_1, tau_1
-# z_1,...z_U
-params.gomez <- estimation_Gomez2013(df.trees, c(0.5, 0.5, 0.5))
-# [1] 0.06934608 3.62409834 0.91054571
-
+# Estimate parameters for Gomez 2013 and Lumbreras 2016:
 alphas <- c(0.1,0.7, 0.5)
 betas <- c(0.1,0.7,3)
 taus <- c(0.1,0.7,0.1)
 params <- list(alphas=alphas, betas=betas, taus=taus)
+params.gomez <- estimation_Gomez2013(df.trees, c(0.5, 0.5, 0.5))
 params.lumbreras <- estimation_Lumbreras2016(df.trees, params)
+
+# If you use a subset of the dataset, do this again
+#users <- names(sort(table(df.trees$user), decreasing = TRUE))
+#df.trees$userint <- match(df.trees$user, users)
+
+
 cat('\n', params.gomez)
 cat('\n alphas: ', params.lumbreras$alphas)
 cat('\n betas: ', params.lumbreras$betas)
