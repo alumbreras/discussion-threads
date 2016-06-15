@@ -1,70 +1,47 @@
 This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: genthreads.aux
-The style file: ../spbasic.bst
+The style file: spbasic.bst
 Database file #1: bibliography.bib
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
-You can't pop an empty literal stack for entry Barabasi1999
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Barabasi1999
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Gomez2010
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Gomez2010
-while executing---line 1652 of file ../spbasic.bst
-Warning--can't use both volume and number fields in Gomez2012a
-Warning--missing publisher in Gomez2012a
-You can't pop an empty literal stack for entry Gomez2012a
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Gomez2012a
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Kumar2010
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Kumar2010
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Wang2012e
-while executing---line 1652 of file ../spbasic.bst
-You can't pop an empty literal stack for entry Wang2012e
-while executing---line 1652 of file ../spbasic.bst
-You've used 5 entries,
-            3239 wiz_defined-function locations,
-            697 strings with 5762 characters,
-and the built_in function-call counts, 6793 in all, are:
-= -- 726
-> -- 145
-< -- 5
-+ -- 62
-- -- 45
-* -- 538
-:= -- 816
-add.period$ -- 5
-call.type$ -- 5
-change.case$ -- 43
-chr.to.int$ -- 5
-cite$ -- 7
-duplicate$ -- 670
-empty$ -- 548
-format.name$ -- 62
-if$ -- 1437
+You've used 6 entries,
+            3270 wiz_defined-function locations,
+            706 strings with 5911 characters,
+and the built_in function-call counts, 7583 in all, are:
+= -- 786
+> -- 157
+< -- 8
++ -- 68
+- -- 48
+* -- 572
+:= -- 917
+add.period$ -- 6
+call.type$ -- 6
+change.case$ -- 51
+chr.to.int$ -- 12
+cite$ -- 6
+duplicate$ -- 756
+empty$ -- 634
+format.name$ -- 66
+if$ -- 1615
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 46
-newline$ -- 25
-num.names$ -- 20
-pop$ -- 154
+missing$ -- 58
+newline$ -- 28
+num.names$ -- 24
+pop$ -- 195
 preamble$ -- 1
-purify$ -- 35
+purify$ -- 40
 quote$ -- 0
-skip$ -- 234
+skip$ -- 259
 stack$ -- 0
-substring$ -- 711
-swap$ -- 284
+substring$ -- 782
+swap$ -- 308
 text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 42
-warning$ -- 2
-while$ -- 41
+type$ -- 51
+warning$ -- 0
+while$ -- 48
 width$ -- 0
-write$ -- 73
-(There were 10 error messages)
+write$ -- 75

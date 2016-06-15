@@ -4,6 +4,8 @@
 library(dplyr)
 library(data.table)
 library(igraph)
+library(parallel)
+
 
 #' Likelihood computation using the dataframe
 #' @param row vector representing a post
@@ -39,6 +41,22 @@ Qopt <- function(params, df.trees, responsabilities, pis, k){
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
   a <- responsabilities[,k][df.trees$userint]
   b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
+}
+
+
+#' The part of the lower bound that we optimize in the M-step
+Qopt.par <- function(params, df.trees, responsabilities, pis, k){
+  # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
+  # given the current responsabilities
+  # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
+  # the complete Q equation
+  # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  cl <- makeCluster(detectCores()-2)
+  clusterExport(cl, c("likelihood_post", "params"))
+  a <- responsabilities[,k][df.trees$userint]
+  b <- parApply(cl, df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  stopCluster(cl)
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
 

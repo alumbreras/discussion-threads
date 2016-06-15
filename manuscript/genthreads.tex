@@ -72,17 +72,23 @@
 
 
 \section{Introduction}
+Random graph models are stochastic generators of graphs that try to reproduce the properties of a some real-world graphs. Ideally, these models should reproduce a large set of properties using a minimum number of assumptions and parameters. If the generated graphs and the real-world graphs share some relevant properties, then the proposed growth mechanism might be a reasonable approximation of the growth laws under which the real-world graphs evolve \citep{Kolaczyk2009}. Formally, a growth model is a probability distribution that quantifies the probability of an existing vertex $i$ of being chosen as the parent for a new vertex $x_t$:
+\begin{align*}
+p(x_t \sim i | G_{t-1}; \boldsymbol{\theta})
+\label{eq:growth_model}
+\end{align*} 
 
-% Forums 
-Online forums have gained popularity during the last years and are of the predominant forms of dialog between Internet users. Most forums sites host many subforums where every subforum covers a topic. In every subforum, users can start new conversations, or threads, by posting an initial message. Every thread then composed by one initial post and a set of comments (or posts) where every comment is a reply either to some other comment or to the initial post. 
+where $G_{t-1}$ is the state of the graph before $x_t$ is attached and $\boldsymbol{\theta}$ is the vector of model parameters.
 
-% Threads as graphs
-A discussion thread can be represented by a tree graph $G$ where vertices represent users posts and an edges $(u,v)$ means the post $u$ is a reply to post $v$. Some authors have posed the question of what determines the growth of a discussion thread. To this aim, they have proposed several stochastic \textit{growth models} able to generate synthetic trees that reproduce some of the properties of the real conversations. 
+Online discussions can be regarded as evolving tree graphs where vertices represent messages and a directed edge indicates that a message is a reply to another message. The tree starts with the root message that starts the conversation, and then evolves towards some form of tree. Different models have been proposed to account for both the way how a tree evolves and the final properties of the tree. The parameters of these models are fixed and every new vertex is assumed to chose its parent according to the current state of the graph $G_{t-1}$ and a set of fixed parameters that govern the whole process. These parameters regulate, for instance, the tendency to reply to the root, or how fast a vertex with more replies attracts more replies.  Since the parameters are fixed, these models implicitly assume that the choice of a parent is independent of the user who writes the new post.
 
-Nevertheless, there is an important element that remains to be included to these growth models: \textbf{time}. Current models consider only the sequence of posts arrivals, and are unable to model the speed changes that can be observed in real online discussions. These speed changes might be due to factors such as circadian cycles or the controversy of a debate. Another problem that has barely received attention is that of \textbf{prediction}. Given the evolution of a discussion $G_1,..., G_t$, what is the most likely state of the graph at $G_{t+1}?$ 
+In this chapter, we explicitly assume that posts written by different users may have different parameters. Some users, for instance, might tend to reply to the root and avoid conversations deeper in the tree. Others might tend to ignore old posts. Others might be specially attracted by popular posts. Formally, we assume that there are $K$ latent types of users and that users of type $k$ behave according to their own group parameters $\boldsymbol{\theta}_k$.  Equation~\ref{eq:growth_model} depends now on the author of post $x_t$:
+\begin{align*}
+p(x_t \sim i | G_{t-1}; \boldsymbol{\theta}_{z_u})
+\end{align*}
+where $z_u$ is the group of user $u$ and  $\boldsymbol{\theta}_{z_u}$ are the parameters of that group.
 
-In this paper we try to find a growth model that is time-sensitive and that is able to make predictions by learning from the recent evolution of a discussion.
-
+The remaining of this chapters is structure as follows: first, we recall the Preferential Attachment model and we present the thread models. Then we present our model, which finds $k$ sets of parameters for $k$ types of user. Finally, we compare both models and show that, while there is no a remarkable difference on how they reproduce structural properties of real threads, our model can be used for recommendation of posts. 
 
 \begin{figure}
 	\subfloat[$p=0.1$]{\includegraphics[width=0.33\textwidth]{erdos_01}}
@@ -93,12 +99,9 @@ In this paper we try to find a growth model that is time-sensitive and that is a
 \end{figure}
 
 
-\section{Related work}\label{sec:related-work}
-Random graph models are stochastic generators of graphs that try to reproduce the properties of a some real-world graphs. Ideally, these models should reproduce a large set of properties using a minimum number of assumptions and parameters.
-%Random graphs  
-One of the simplest random graph models is that of Erdös-Rényi, where the number of nodes is given from the beginning and an edge between any pair of nodes is created with a probability $p$  (Figure~\ref{fig:erdos_rendy}). After this foundational work, other graph models have attempted to mimic real-world networks. The Watts-Strogatz model, for instance, generates graphs with some \textit{small-network} properties such as low average distance between vertices and high transivity (friends of my friends are also my friends).
+\section{Network Growth model}\label{sec:related-work}
 
-An interesting family of random graphs is formed by the \textit{growth models}. Growth models try to reproduce not only the final properties of the network but also how the network is built. The \textit{preferential attachment} model proposed by \cite{Barabasi1999} is the best well-known member of this family.
+Growth models try to reproduce not only the final properties of the network but also how the network is built. The \textit{preferential attachment} model proposed by \cite{Barabasi1999} is the best well-known member of this family.
 The Barabasi-Albert model builds a graph by sequentially adding its vertices; once a new vertex $x$ is added to the graph it decides whether to create an edge to an existing vertex $i$ with probability
 
 \begin{align}
@@ -118,7 +121,7 @@ where $d_i$ is the degree of the vertex $i$ before vertex $x$ is added\footnote{
 
 
 
-During the recent years, some authors have proposed models to explain the growth of online conversations. \citep{Kumar2010, Gomez2010, Wang2012e, Gomez2012a}. We describe this models in the following sections.
+During the recent years, some authors have proposed models to explain the growth of online conversations. \citep{Kumar2010, Gomez2010, Wang2012e, Gomez2012}. We describe this models in the following sections.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Preferential attachment and recency}
@@ -198,7 +201,7 @@ Since this is a convex function, the minimization is done with the Nelder-Mead a
 
 
 \subsection{Preferential attachment, root bias and recency}
-In \cite{Gomez2012a} the authors combine \textit{preferential-attachment}, a \textit{bias towards the root} and \textit{novelty}. Unlike in their former model in \cite{Gomez2010}, here they sum these factors instead of multiplying them:
+In \cite{Gomez2012} the authors combine \textit{preferential-attachment}, a \textit{bias towards the root} and \textit{novelty}. Unlike in their former model in \cite{Gomez2010}, here they sum these factors instead of multiplying them:
 
 \begin{equation}
 %p(\pi_t = k | \boldmath{\pi}_{(1:t-1)}) 
@@ -253,7 +256,7 @@ Authors use their Maximum Likelihood estimators, which are both known in the lit
 There are two aspects that might me improved:
 
 \begin{itemize}
-	\item Time is only poorly combined with the structure in \cite{Wang2012e}. Actually in this model time is independent of the structure and vicecersa. As suggested in \cite{Gomez2012a} (Conclusions) combining both time and structure is an interesting line of research. Besides, there are probably other ways of consider time.
+	\item Time is only poorly combined with the structure in \cite{Wang2012e}. Actually in this model time is independent of the structure and vicecersa. As suggested in \cite{Gomez2012} (Conclusions) combining both time and structure is an interesting line of research. Besides, there are probably other ways of consider time.
 	
 	\item These models estimate their parameters once and therefore very different threads are summarized with common parameters. However, imagine that we learned our parameters from a set of threads $\mathbf{G}$ and now we want to make predictions on a particular new thread $G^*$, that is, we want to compute $p(x \sim i | G_{1:t-1}^*, \mathbf{G})$. There is a lot to be learned from the particular ongoing dynamics of the conversation until time $t$, and making predictions based on the globally estimated parameters will not be flexible enough to adapt the prediction to the last observations. Bayesian inference is a natural way to do this since we will be constantly updating our believes every time a new observation (post) arrives. The challenge here is its computational cost, so we should  
 	probably work with fast approximations to the posterior
@@ -263,7 +266,7 @@ Growth graph models are stochastic processes governed by a set of parameters. On
 
 \section{Mixture-based model}
 
-We build our model over \cite{Gomez2012a}. We consider the there are $N$ latent groups of users and that each group $i$ has its own parameters $\alpha_i, \beta_i, \tau_i$. Our task is to detect the latent clusters and the parameters associated to each cluster. For this, we will make use of the Expectation-Maximization algorithm.
+We build our model over \cite{Gomez2012}. We consider the there are $N$ latent groups of users and that each group $i$ has its own parameters $\alpha_i, \beta_i, \tau_i$. Our task is to detect the latent clusters and the parameters associated to each cluster. For this, we will make use of the Expectation-Maximization algorithm.
 
 \subsection{General EM} 
 
@@ -285,7 +288,7 @@ The equality holds when $q(\mathbf{Z})$ is the posterior $p(\mathbf{Z} | \mathbf
 
 Given a post $n$ written at time step $t$, we consider the three following observations: the degree of its parent at time $t-1$, denoted as $d_n$; whether its parent is the root post, denoted as $r_n$; and the lag, in time steps, between the post and its parent, denoted as $l_n$. Let $\mathbf{X} = \{x_1,...,x_N\}$ be a matrix where $x_i = \{t_i, d_i, r_i, l_i\}$
 
-The model of \cite{Gomez2012a} can be expressed as:
+The model of \cite{Gomez2012} can be expressed as:
 
 \begin{align}
 p(\mathbf{X} | \boldsymbol{\theta}) = \prod_{n=1}^N
@@ -356,6 +359,6 @@ which we can optimize iteratively.
 (Only for internal discussion)
 
 %\bibliographystyle{chicago} % or plain
-\bibliographystyle{../spbasic} 
+\bibliographystyle{spbasic} 
 \bibliography{bibliography}
 \end{document}
