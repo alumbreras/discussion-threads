@@ -82,8 +82,8 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
-    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post', 'Qopt')) %do% {
-      nmkb(c(alphas[k], betas[k], taus[k]), Qopt.par, 
+    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post', 'Qopt')) %dopar% {
+      nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
            lower = c(0,0,0), upper = c(Inf, Inf, 1), 
            control = list(maximize=TRUE),
            df.trees = df.trees, responsabilities = responsabilities, pis = pis, k=k)
@@ -111,8 +111,6 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     cat("\nbetas: ", betas)
     cat("\ntaus: ", taus)
     cat("\n likelihood: ", like)
-    cat("\n Q: ", sum(traces[iter,]))
-    cat("\n Entropy: ", sum(responsabilities*log(responsabilities)))
     cat("\n***")
 
     # Update pis

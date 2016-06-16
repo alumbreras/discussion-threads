@@ -41,7 +41,7 @@ plot(rowSums(params.lumbreras$traces), type='b')
 title('\n Likelihood')
 
 #save(params.gomez, file='params.gomez.rda')
-#save(params.lumbreras, file='params.lumbreras.rda')
+#save(params.lumbreras, file='data/params.lumbreras.rda')
 load('data/params.gomez.rda')
 load('data/params.lumbreras.rda')
 
