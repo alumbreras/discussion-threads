@@ -92,7 +92,7 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
 
   # Entropy of the posterior
   entropies <- -responsabilities*log(responsabilities)
-  entropies[is.na(entropies)] <- 0
+  entropies[is.na(entropies)] <- 0 # covers cases of 0*log(0) (very rare)
   entropy <- sum(entropies)
 
   # Eq. 9.74, p.452

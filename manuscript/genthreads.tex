@@ -77,7 +77,6 @@ Random graph models are stochastic generators of graphs that try to reproduce th
 p(x_t \sim i | G_{t-1}; \boldsymbol{\theta})
 \label{eq:growth_model}
 \end{align*} 
-
 where $G_{t-1}$ is the state of the graph before $x_t$ is attached and $\boldsymbol{\theta}$ is the vector of model parameters.
 
 Online discussions can be regarded as evolving tree graphs where vertices represent messages and a directed edge indicates that a message is a reply to another message. The tree starts with the root message that starts the conversation, and then evolves towards some form of tree. Different models have been proposed to account for both the way how a tree evolves and the final properties of the tree. The parameters of these models are fixed and every new vertex is assumed to chose its parent according to the current state of the graph $G_{t-1}$ and a set of fixed parameters that govern the whole process. These parameters regulate, for instance, the tendency to reply to the root, or how fast a vertex with more replies attracts more replies.  Since the parameters are fixed, these models implicitly assume that the choice of a parent is independent of the user who writes the new post.
