@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  15 JUN 2016 20:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  17 JUN 2016 12:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1128,109 +1128,87 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 72.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<erdos_01.png, id=68, 834.11626pt x 575.14874pt>
-File: erdos_01.png Graphic file (type png)
- <use erdos_01.png>
-Package pdftex.def Info: erdos_01.png used on input line 93.
-(pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
-
-<erdos_05.png, id=69, 834.11626pt x 575.14874pt>
-File: erdos_05.png Graphic file (type png)
- <use erdos_05.png>
-Package pdftex.def Info: erdos_05.png used on input line 94.
-(pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
-
-<erdos_1.png, id=70, 834.11626pt x 575.14874pt>
-File: erdos_1.png Graphic file (type png)
- <use erdos_1.png>
-Package pdftex.def Info: erdos_1.png used on input line 95.
-(pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
- [2 <./erdos_01.png> <./erdos_05.png> <./erdos_1.png>]
-<barabasi_0.png, id=97, 834.11626pt x 575.14874pt>
+<barabasi_0.png, id=72, 834.11626pt x 575.14874pt>
 File: barabasi_0.png Graphic file (type png)
  <use barabasi_0.png>
-Package pdftex.def Info: barabasi_0.png used on input line 114.
+Package pdftex.def Info: barabasi_0.png used on input line 105.
 (pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
 
-<barabasi_1.png, id=98, 834.11626pt x 575.14874pt>
+<barabasi_1.png, id=73, 834.11626pt x 575.14874pt>
 File: barabasi_1.png Graphic file (type png)
  <use barabasi_1.png>
-Package pdftex.def Info: barabasi_1.png used on input line 115.
+Package pdftex.def Info: barabasi_1.png used on input line 106.
 (pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
 
-<barabasi_1_8.png, id=99, 834.11626pt x 575.14874pt>
+<barabasi_1_8.png, id=74, 834.11626pt x 575.14874pt>
 File: barabasi_1_8.png Graphic file (type png)
  <use barabasi_1_8.png>
-Package pdftex.def Info: barabasi_1_8.png used on input line 116.
+Package pdftex.def Info: barabasi_1_8.png used on input line 107.
 (pdftex.def)             Requested size: 138.02448pt x 95.1675pt.
 
-[3 <./barabasi_0.png> <./barabasi_1.png> <./barabasi_1_8.png>]
-Overfull \hbox (1.8962pt too wide) in paragraph at lines 171--172
-\OT1/cmr/m/n/10 Maximum Like-li-hood Es-ti-ma-tion of $\OML/cmm/m/it/10 []; [
-]$ \OT1/cmr/m/n/10 and $\OML/cmm/m/it/10 ^^L$ \OT1/cmr/m/n/10 is done by min-i-
-miz-ing the neg-a-tive log-likelihood: 
- []
-
-<gomez_real.png, id=131, 1114.1625pt x 423.5825pt>
+[2] [3 <./barabasi_0.png> <./barabasi_1.png> <./barabasi_1_8.png>]
+<gomez_real.png, id=132, 1114.1625pt x 423.5825pt>
 File: gomez_real.png Graphic file (type png)
  <use gomez_real.png>
-Package pdftex.def Info: gomez_real.png used on input line 195.
+Package pdftex.def Info: gomez_real.png used on input line 212.
 (pdftex.def)             Requested size: 188.21288pt x 71.54916pt.
 
-<gomez_synthetic.png, id=132, 1109.14375pt x 395.4775pt>
+<gomez_synthetic.png, id=133, 1109.14375pt x 395.4775pt>
 File: gomez_synthetic.png Graphic file (type png)
 
 <use gomez_synthetic.png>
-Package pdftex.def Info: gomez_synthetic.png used on input line 196.
+Package pdftex.def Info: gomez_synthetic.png used on input line 213.
 (pdftex.def)             Requested size: 188.21288pt x 67.10356pt.
  [4 <./gomez_real.png> <./gomez_synthetic.png>]
 [5] [6] [7] (./genthreads.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 363.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 376.
  [8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 363.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 376.
  (./genthreads.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 363.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 363.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 376.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 376.
 Package rerunfilecheck Info: File `genthreads.out' has not changed.
-(rerunfilecheck)             Checksum: 4ABB4D0BB4D09CD2131A041E918289AE;705.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 363.
+(rerunfilecheck)             Checksum: CB30956E9E084575E4295EC4F62C47D7;618.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 376.
  ) 
 Here is how much of TeX's memory you used:
- 18154 strings out of 494902
- 311342 string characters out of 6177496
- 393227 words of memory out of 5000000
- 20948 multiletter control sequences out of 15000+600000
- 13355 words of font info for 51 fonts, out of 8000000 for 9000
+ 18139 strings out of 494902
+ 311118 string characters out of 6177496
+ 396281 words of memory out of 5000000
+ 20941 multiletter control sequences out of 15000+600000
+ 14578 words of font info for 55 fonts, out of 8000000 for 9000
  62 hyphenation exceptions out of 8191
- 56i,16n,92p,908b,483s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,16n,92p,908b,495s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10
-.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></
-usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on genthreads.pdf (8 pages, 788048 bytes).
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+mi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+msy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on genthreads.pdf (8 pages, 522739 bytes).
 PDF statistics:
- 298 PDF objects out of 1000 (max. 8388607)
- 245 compressed objects within 3 object streams
- 60 named destinations out of 1000 (max. 500000)
- 133 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 308 PDF objects out of 1000 (max. 8388607)
+ 259 compressed objects within 3 object streams
+ 55 named destinations out of 1000 (max. 500000)
+ 118 words of extra memory for PDF output out of 10000 (max. 10000000)
 

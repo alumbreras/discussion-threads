@@ -4,16 +4,13 @@
 # Load dataframe representation of trees
 
 #trees <- load_trees(forum="reddit", subforum="gameofthrones")
-#df.trees <- trees_to_dataframe(trees)
-#save(trees, file='trees.gof.rda')
-#save(df.trees, file='df.trees.gof.rda')
+trees <- load_trees(forum="reddit", subforum="podemos")
+df.trees <- trees_to_dataframe(trees)
 
-load('data/trees.gof.rda')
-load('data/df.trees.gof.rda')
-# Subset for testing purposes
-
-#trees <- trees[1:1000]
-#df.trees <- trees_to_dataframe(trees)
+save(trees, file='data/trees.podemos.rda')
+save(df.trees, file='data/df.trees.podemos.rda')
+#load('data/trees.gof.rda')
+#load('data/df.trees.gof.rda')
 
 # In case users are string names, we give each user a unique integer id
 # besides, ids are given according to the user frequency (though not necessary)
@@ -40,10 +37,10 @@ cat('\n taus: ', params.lumbreras$taus)
 plot(rowSums(params.lumbreras$traces), type='b')
 title('\n Likelihood')
 
-#save(params.gomez, file='params.gomez.rda')
-#save(params.lumbreras, file='data/params.lumbreras.rda')
-load('data/params.gomez.rda')
-load('data/params.lumbreras.rda')
+save(params.gomez, file='data/params.gomez.podemos.rda')
+save(params.lumbreras, file='data/params.lumbreras.podemos.rda')
+#load('data/params.gomez.rda')
+#load('data/params.lumbreras.rda')
 
 # Compare likelihood Gomez2013 and Lumbreras2016 over the trees
 likelihood.gomez <- likelihood_Gomez2013(df.trees, params.gomez)
@@ -63,8 +60,8 @@ users <- df.trees$userint
 trees.gomez <- generate_trees(model='Gomez2013', params=params.gomez, sizes=sizes)
 trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras, sizes=sizes, user.sample=users)
 
-#save(trees.gomez, file = 'data/trees.gomez.rda')
-#save(trees.lumbreras, file = 'data/trees.lumbreras.rda')
+save(trees.gomez, file = 'data/trees.gomez.podemos.rda')
+save(trees.lumbreras, file = 'data/trees.lumbreras.podemos.rda')
 
 # Compare genetared threads (plot degree distributions, etc)
 compare_trees(trees, trees.lumbreras, trees.gomez)

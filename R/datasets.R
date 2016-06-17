@@ -21,7 +21,7 @@ load_trees <- function(forum='reddit', subforum='gameofthrones'){
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
 
-  load(paste0('./R_objects/dfposts_', subforum, '.Rda'))
+  load(paste0('./data/dfposts_', subforum, '.Rda'))
   df.threads <- plyr::count(df.posts, "thread") %>% filter(freq>10)
 
   # Extract graphs of threads. Ignore NA graphs (exceptions due, e.g. to root not being the oldest post)
