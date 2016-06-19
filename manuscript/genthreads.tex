@@ -311,12 +311,15 @@ where $q$ is some arbitrary probability distribution. The EM algorithm starts by
 \begin{align}
 q(\mathbf{Z}) = p(\mathbf{Z} | \mathbf{X}, \boldsymbol{\theta}) 
 \end{align}
-In the M-step we optimize the lower bound with respect to the parameters. We will now make the $\boldsymbol{\pi}$ parameters of the prior distribution $p(\mathbf{Z} | \boldsymbol{\pi})$ explicit. Since we fixed $q(\mathbf{Z})$, the entropy term is constant, and thus we just have to maximize the first term. After we plug-in the recently computed $q(\mathbf{Z})$ and using the chain rule, we obtain:
+Moreover, in that case the lower bound $\mathcal{L}(q,\boldsymbol{\theta})$ reaches the true loglikelihood $\ln p(\boldsymbol{X} | \boldsymbol{\theta})$. In the M-step we optimize the lower bound with respect to the parameters. We will now make the $\boldsymbol{\pi}$ parameters of the prior distribution $p(\mathbf{Z} | \boldsymbol{\pi})$ explicit. Since we fixed $q(\mathbf{Z})$, the entropy term is constant, and thus we just have to maximize the first term. After we plug-in the recently computed $q(\mathbf{Z})$ and using the chain rule, we obtain:
 \begin{align*}
-\argmax_{\boldsymbol{\theta}, \boldsymbol{\pi}} \sum_{\mathbf{Z}} p(\mathbf{Z} | \mathbf{X}, \boldsymbol{\theta})
+\argmax_{\boldsymbol{\theta}, \boldsymbol{\pi}} 
+\underbrace{
+\sum_{\mathbf{Z}} p(\mathbf{Z} | \mathbf{X}, \boldsymbol{\theta})
 \overbrace{
 \left(\ln p(\mathbf{Z} | \boldsymbol{\pi})  + \ln p(\mathbf{X  | \mathbf{Z}, \boldsymbol{\theta}})\right)
 }^{\ln p(\mathbf{X}, \mathbf{Z} | \boldsymbol{\theta})}
+}_{\mathbb{E}_\mathbf{Z}\left[\ln p(\mathbf{X, \mathbf{Z} | \boldsymbol{\theta}})\right]} 
 \end{align*}
 
 We repeat the E and the M step until the improvement in the likelihood is lower than some threshold $\epsilon$.
@@ -388,7 +391,10 @@ In this section, we validate our model for two different tasks. First, we analys
 For each dataset, we estimated the parameters of \citep{Gomez2012} and our model. Then, we generated artificial threads and measured the following properties:
 
 \begin{itemize}
-\item degree distribution:
+\item degree distribution
+\item subtree size
+\item size versus depth
+\item width versus depth
 \end{itemize} 
 
 \begin{figure}
@@ -403,7 +409,11 @@ For each dataset, we estimated the parameters of \citep{Gomez2012} and our model
 \end{figure}
 
 \subsection{Recommendation of posts}
-
+Assuming that we know that a new user is going to participate in the discussion, the recommendation task is to predict to which posts he will reply, taking the one with more probability according to our likelihood function and the estimated parameters:
+\begin{align*}
+\argmax_k p(x \sim k)
+\end{align*}
+Surprisingly, the post with the maximum likelihood is always the root.
 \newpage
 \appendix
 \section*{Appendices}
