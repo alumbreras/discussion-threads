@@ -77,8 +77,8 @@ df.preds <- mutate(df.preds, like.baseline=log(1/tree.size))
 df.preds <- mutate(df.preds, predicted.baseline=1)
 
 # Compute cummulative hits
-df.preds <- mutate(df.preds, hit.gomez=cumsum(as.numeric(predicted.gomez==chosen)))
-df.preds <- mutate(df.preds, hit.lumbreras=cumsum(as.numeric(predicted.lumbreras==chosen)))
+df.preds <- mutate(df.preds, hit.gomez = cumsum(as.numeric(predicted.gomez==chosen)))
+df.preds <- mutate(df.preds, hit.lumbreras = cumsum(as.numeric(predicted.lumbreras==chosen)))
 df.preds <- mutate(df.preds, hit.baseline = cumsum(as.numeric(predicted.baseline==chosen)))
 
 
@@ -116,23 +116,21 @@ title('Likelihood')
 # see grouped operations
 #https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html
 
-df.rankings <- select(df.preds, ranking.lumbreras, ranking.gomez, ranking.barabasi, tree.size) %>% filter(tree.size<50)
-dff <- melt(df.rankings, id.vars='tree.size', variable.name='model', value.name='rank')
+df.rankings <- select(df.preds, ranking.lumbreras, 
+                                ranking.gomez, 
+                                ranking.barabasi, 
+                                tree.size) %>% 
+               filter(tree.size<50) %>%
+               melt(id.vars='tree.size', variable.name='model', value.name='rank')
 
-by_model <- group_by(dff, model, tree.size)
-dfff <- summarize(by_model, rank.mean=mean(rank), rank.sd = sd(rank))
+by_model <- group_by(df.rankings, model, tree.size) %>%
+            summarize(rank.mean=mean(rank), rank.sd = sd(rank))
 
-# classic
-dfff.lum <- filter(dfff, model=='ranking.lumbreras')
-dfff.gom <- filter(dfff, model=='ranking.gomez')
+ggplot(by_model, aes(x = tree.size, y=rank.mean, group=model, color=model)) +
+  geom_point() +
+  scale_size_area() + 
+  theme_bw()
 
-plot(dfff.lum$tree.size, dfff.lum$rank.mean)
-lines(dfff.lum$tree.size, dfff.gom$rank.mean)
-# ggplot
-ggplot(dfff, aes(x = tree.size, y=rank.mean, group=model, color=model)) +
-  #geom_point() +
-  geom_smooth() +
-  scale_size_area()
 
 
 

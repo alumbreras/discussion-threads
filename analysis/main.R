@@ -82,5 +82,6 @@ trees_ <- lapply(trees, function(t) {V(t)$userint <- match(V(t)$user, users);t})
 
 if(FALSE){
   save(trees_, file='data/trees_.rda')
+  load('data/trees_.rda')
 }
 compare_link_prediction(trees_, param.lumbreras, params.gomez)
