@@ -7,10 +7,12 @@
 trees <- load_trees(forum="reddit", subforum="podemos")
 df.trees <- trees_to_dataframe(trees)
 
-save(trees, file='../data/trees.podemos.rda')
-save(df.trees, file='../data/df.trees.podemos.rda')
-#load('../data/trees.podemos.rda')
-#load('../data/df.trees.podemos.rda')
+if(FALSE){
+save(trees, file='data/trees.podemos.rda')
+save(df.trees, file='data/df.trees.podemos.rda')
+load('data/trees.podemos.rda')
+load('data/df.trees.podemos.rda')
+}
 
 # In case users are string names, we give each user a unique integer id
 # besides, ids are given according to the user frequency (though not necessary)
@@ -37,10 +39,12 @@ cat('\n taus: ', params.lumbreras$taus)
 plot(rowSums(params.lumbreras$traces), type='b')
 title('\n Likelihood')
 
+if(FALSE){
 save(params.gomez, file='data/params.gomez.podemos.rda')
 save(params.lumbreras, file='data/params.lumbreras.podemos.rda')
-#load('../data/params.gomez.rda')
-#load('../data/params.lumbreras.rda')
+load('data/params.gomez.rda')
+load('data/params.lumbreras.rda')
+}
 
 # Compare likelihood Gomez2013 and Lumbreras2016 over the trees
 likelihood.gomez <- likelihood_Gomez2013(df.trees, params.gomez)
@@ -60,8 +64,10 @@ users <- df.trees$userint
 trees.gomez <- generate_trees(model='Gomez2013', params=params.gomez, sizes=sizes)
 trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras, sizes=sizes, user.sample=users)
 
+if(FALSE){
 save(trees.gomez, file = 'data/trees.gomez.podemos.rda')
 save(trees.lumbreras, file = 'data/trees.lumbreras.podemos.rda')
+}
 
 # Compare genetared threads (plot degree distributions, etc)
 compare_trees(trees, trees.lumbreras, trees.gomez)
@@ -72,7 +78,9 @@ compare_trees(trees, trees.lumbreras, trees.gomez)
 # isert user class in the tree 
 #TODO: this should be done once on top of the script
 users <- names(sort(table(df.trees$user), decreasing = TRUE))
-
 trees_ <- lapply(trees, function(t) {V(t)$userint <- match(V(t)$user, users);t})
 
+if(FALSE){
+  save(trees_, file='data/trees_.rda')
+}
 compare_link_prediction(trees_, param.lumbreras, params.gomez)
