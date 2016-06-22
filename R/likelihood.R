@@ -29,6 +29,7 @@ likelihood_post <- function(row, alpha, beta, tau){
 #' @return loglikelihood of the dataset
 #' @export
 likelihood_Gomez2013 <- function(df.trees, params){
+  df.trees <- filter(df.trees, t>1)
   sum(apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3])))
 }
 
@@ -39,6 +40,7 @@ Qopt <- function(params, df.trees, responsabilities, pis, k){
   # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  df.trees <- filter(df.trees, t>1)
   a <- responsabilities[,k][df.trees$userint]
   b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
@@ -52,6 +54,7 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
   # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  df.trees <- filter(df.trees, t>1)
   cl <- makeCluster(detectCores()-2)
   clusterExport(cl, c("likelihood_post", "params"))
   a <- responsabilities[,k][df.trees$userint]
@@ -68,6 +71,7 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
 #' @return loglikelihood of the dataset
 #' @export
 likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
+  df.trees <- filter(df.trees, t>1)
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
@@ -110,8 +114,9 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
 #' @param responsabilities responsabilities of users w.r.t clusters
 #' @return loglikelihood of the dataset
 #' @export
-likelihood_Lumbreras2016.hard <- function(df.trees, params, responsabilities){
+likelihood_Lumbreras2016_hard <- function(df.trees, params, responsabilities){
   "This is wrong because a pi factor is missing (a priori probabilities)"
+  df.trees <- filter(df.trees, t>1)
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
@@ -131,33 +136,57 @@ likelihood_Lumbreras2016.hard <- function(df.trees, params, responsabilities){
 ########################################################################################
 ########################################################################################
 #' Deprecated b/c it uses igraph keep it just for testing
-#' @param trees list of trees
+#' @param tree
 #' @param alpha popularity parameter
 #' @param beta root bias
 #' @param tau recency parameter
 #' @return loglikelihood of the dataset
 #' @export
-likelihood.Gomez2013.deprecated <- function(trees, alpha=1, beta = 1, tau = 0.75){
+likelihood_Gomez2013_tree <- function(tree, params){
   # Compute the likelihood of the whole set of trees
   # Arguments:
   #   trees: observed list of trees
   #   alpha.root, alpha.c, beta.root: parameters of the model
-  like <- 0
-  for (i in 1:length(trees)){
-    g <- trees[[i]]
-    parents <- get.edgelist(g)[,2] # parents vector
+  parents <- get.edgelist(tree, names=FALSE)[,2] # parents vector
 
-    # skip root and first post
-    for(t in 2:length(parents)){
-      b <- rep(0,t)
-      b[1] <- beta
-      lags <- t:1
-      popularities <- 1 + tabulate(parents[1:(t-1)], nbins=t)
-      popularities[1] <- popularities[1] - 1 # root has no parent
-      probs <- alpha*popularities + b + tau^lags
-      probs <- probs/sum(probs)
-      like <- like + log(probs[parents[t]])
-    }
+  alpha <- params[1]
+  beta <- params[2]
+  tau <- params[3]
+  
+  like <- 0
+  for(t in 2:length(parents)){
+    b <- rep(0,t)
+    b[1] <- beta
+    lags <- t:1
+    popularities <- 1 + tabulate(parents[1:(t-1)], nbins=t) # event root has ghost parent (to follow Gomez 2013)
+    probs <- alpha*popularities + b + tau^lags
+    probs <- probs/sum(probs)
+    like <- like + log(probs[parents[t]])
+  }
+like
+}
+
+likelihood_Lumbreras2016_tree_hard <- function(tree, params, responsabilities){
+  
+  parents <- get.edgelist(tree, names=FALSE)[,2] 
+  like <- 0 
+  z <- apply(responsabilities, 1, which.max)
+  
+  for(t in 2:length(parents)){
+    k <- z[V(tree)$userint[t+1]] # Attention! t+1, not t, since R first element (t=0) has position 1 in tree
+    alpha <- params$alphas[k]
+    beta <- params$betas[k]
+    tau <- params$taus[k]
+    
+    b <- rep(0,t)
+    b[1] <- beta
+    lags <- t:1
+    popularities <- 1 + tabulate(parents[1:(t-1)], nbins=t) # event root has ghost parent (to follow Gomez 2013)
+    probs <- alpha*popularities + b + tau^lags
+    probs <- probs/sum(probs)
+    like <- like + log(probs[parents[t]])
+    cat('\n', t, " ", V(tree)$userint[t+1], " ", log(probs[parents[t]]))
+    
   }
   like
 }

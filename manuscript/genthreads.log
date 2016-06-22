@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  20 JUN 2016 17:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  22 JUN 2016 16:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1169,14 +1169,14 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 277.
  [5] [6] [7]
-<benchmark_structures_gof.png, id=215, 647.41875pt x 414.04688pt>
+<benchmark_structures_gof.png, id=214, 647.41875pt x 414.04688pt>
 File: benchmark_structures_gof.png Graphic file (type png)
 
 <use benchmark_structures_gof.png>
 Package pdftex.def Info: benchmark_structures_gof.png used on input line 404.
 (pdftex.def)             Requested size: 418.25368pt x 267.49095pt.
 
-<benchmark_structures_podemos.png, id=216, 653.44125pt x 417.05812pt>
+<benchmark_structures_podemos.png, id=215, 653.44125pt x 417.05812pt>
 File: benchmark_structures_podemos.png Graphic file (type png)
 
 <use benchmark_structures_podemos.png>
@@ -1184,81 +1184,73 @@ Package pdftex.def Info: benchmark_structures_podemos.png used on input line 40
 9.
 (pdftex.def)             Requested size: 418.25368pt x 266.9481pt.
 
-<predictions_likelihood_podemos.png, id=217, 652.68843pt x 417.05812pt>
+<predictions_likelihood_podemos.png, id=216, 652.68843pt x 417.05812pt>
 File: predictions_likelihood_podemos.png Graphic file (type png)
 
 <use predictions_likelihood_podemos.png>
 Package pdftex.def Info: predictions_likelihood_podemos.png used on input line 
 423.
 (pdftex.def)             Requested size: 418.25368pt x 267.2663pt.
- [8 <./benchmark_structures_gof.png (PNG copy)>] [9 <./benchmark_structures_pod
-emos.png (PNG copy)> <./predictions_likelihood_podemos.png (PNG copy)>] (./gent
-hreads.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 447.
- [10]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 447.
+
+<benchmark_ranking.png, id=217, 647.41875pt x 414.04688pt>
+File: benchmark_ranking.png Graphic file (type png)
+
+<use benchmark_ranking.png>
+Package pdftex.def Info: benchmark_ranking.png used on input line 429.
+(pdftex.def)             Requested size: 418.25368pt x 267.49095pt.
+ [8 <./benchmark_structures_gof.png (PNG copy)>]
+[9 <./benchmark_structures_podemos.png (PNG copy)> <./predictions_likelihood_po
+demos.png (PNG copy)>] (./genthreads.bbl [10 <./benchmark_ranking.png (PNG copy
+)>])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 454.
+ [11]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 454.
  (./genthreads.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 447.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 447.
-
-
-Package rerunfilecheck Warning: File `genthreads.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `genthreads.out':
-(rerunfilecheck)             Before: 6990A3D1A7AEC2EFC125EC68526F36A1;955
-(rerunfilecheck)             After:  3D8F585F02500430FD4CE0F55CE0755E;969.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 447.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 454.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 454.
+Package rerunfilecheck Info: File `genthreads.out' has not changed.
+(rerunfilecheck)             Checksum: 3D8F585F02500430FD4CE0F55CE0755E;969.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 454.
  ) 
 Here is how much of TeX's memory you used:
- 18199 strings out of 494902
- 312285 string characters out of 6177496
+ 18203 strings out of 494902
+ 312401 string characters out of 6177496
  396418 words of memory out of 5000000
- 20980 multiletter control sequences out of 15000+600000
+ 20984 multiletter control sequences out of 15000+600000
  15250 words of font info for 59 fonts, out of 8000000 for 9000
  62 hyphenation exceptions out of 8191
  56i,28n,92p,908b,495s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{subsection.5.2} has been referenced but does not 
-exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{subsection.5.1} has been referenced but does not ex
-ist, replaced by a fixed one
-
-pdfTeX warning (dest): name{section.5} has been referenced but does not exist, 
-replaced by a fixed one
-
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr
-/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx5.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/texlive/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
-6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/sh
-are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr
-/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb>
-Output written on genthreads.pdf (10 pages, 661560 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx5.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+mi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib7.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+msy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb>
+Output written on genthreads.pdf (11 pages, 741622 bytes).
 PDF statistics:
- 352 PDF objects out of 1000 (max. 8388607)
- 297 compressed objects within 3 object streams
- 69 named destinations out of 1000 (max. 500000)
- 173 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 355 PDF objects out of 1000 (max. 8388607)
+ 298 compressed objects within 3 object streams
+ 68 named destinations out of 1000 (max. 500000)
+ 178 words of extra memory for PDF output out of 10000 (max. 10000000)
 
