@@ -20,10 +20,10 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
     chosen <- parents[t]
     
     # Lumbreras 2016
-    z.user <- z[V(tree)$userint[t]]
-    alpha <- params.lumbreras$alphas[z.user]
-    beta <- params.lumbreras$betas[z.user]
-    tau <- params.lumbreras$taus[z.user]
+    k <- z[V(tree)$userint[t+1]] # Attention to the t+1!
+    alpha <- params.lumbreras$alphas[k]
+    beta <- params.lumbreras$betas[k]
+    tau <- params.lumbreras$taus[k]
     b[1] <- beta
     probs.lumbreras <- alpha*popularities + b + tau^lags
     predicted.lumbreras <- which.max(probs.lumbreras)
@@ -63,7 +63,7 @@ cl <- makeCluster(detectCores()-2)
 clusterExport(cl, c("compare_link_prediction", "params.lumbreras", "params.gomez"))
 clusterEvalQ(cl, {library(igraph)})
 
-df.preds <- parLapply(cl, trees_, function(tree) compare_link_prediction(tree, params.lumbreras, params.gomez)) %>% 
+df.preds <- parLapply(cl, trees, function(tree) compare_link_prediction(tree, params.lumbreras, params.gomez)) %>% 
             rbindlist %>% 
             as.data.frame
 
@@ -81,9 +81,10 @@ df.preds <- mutate(df.preds, hit.gomez = cumsum(as.numeric(predicted.gomez==chos
 df.preds <- mutate(df.preds, hit.lumbreras = cumsum(as.numeric(predicted.lumbreras==chosen)))
 df.preds <- mutate(df.preds, hit.baseline = cumsum(as.numeric(predicted.baseline==chosen)))
 
-
-#save(df.preds, file='data/df.preds.rda')
-#load('data/df.preds.rda')
+if(FALSE){
+ save(df.preds, file='data/df.preds.gameofthrones.rda')
+ load('data/df.preds.gameofthrones.rda')
+}
 
 cum.hits.gomez <- cumsum(df.preds$hit.gomez)  
 cum.hits.lumbreras <- cumsum(df.preds$hit.lumbreras)  
@@ -95,6 +96,7 @@ vmin <- min(c(cum.hits.baseline, cum.hits.gomez, cum.hits.lumbreras))
 plot(1:length(cum.hits.baseline), cum.hits.baseline, ylim=c(vmin,vmax), type='l', col='black', xlab="posts", ylab='hits')
 lines(1:length(cum.hits.baseline), cum.hits.gomez, col='blue')
 lines(1:length(cum.hits.baseline), cum.hits.lumbreras, col='red')
+legend("bottomright", c('baseline', 'lumbreras', 'gomez'), col=c('black', 'red', 'blue'), pch=19, inset = 0.05)
 title('Hits')
 
 cum.likes.gomez <- cumsum(df.preds$like.gomez)
@@ -115,12 +117,12 @@ title('Likelihood')
 ###############################'
 # see grouped operations
 #https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html
-
+df.preds <- select(df.preds, -hit.gomez, -hit.baseline, -hit.lumbreras)
 df.rankings <- select(df.preds, ranking.lumbreras, 
                                 ranking.gomez, 
                                 ranking.barabasi, 
                                 tree.size) %>% 
-               filter(tree.size<50) %>%
+               filter(tree.size<250) %>%
                melt(id.vars='tree.size', variable.name='model', value.name='rank')
 
 by_model <- group_by(df.rankings, model, tree.size) %>%
@@ -129,7 +131,11 @@ by_model <- group_by(df.rankings, model, tree.size) %>%
 ggplot(by_model, aes(x = tree.size, y=rank.mean, group=model, color=model)) +
   geom_point() +
   scale_size_area() + 
-  theme_bw()
+  geom_smooth() +
+  theme_classic()
+
+
+# Plot by...
 
 
 
