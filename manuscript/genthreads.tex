@@ -386,6 +386,7 @@ where the likelihood $p(\mathbf{X}_u | \boldsymbol{\theta}_k)$ can be also facto
 The E-step is done with Equation~\ref{eq:e-step} and the M-step is done with Equation~\ref{eq:m-step} Since due to the form of our likelihood the equation cannot be analytically maximized, we use Nelder-Mead optimization.
 
 \subsection{Number of clusters}
+We use the BIC criterion to choose the number of clusters.
 \section{Experiments}
 In this section, we validate our model for two different tasks. First, we analyse whether our model explain some structural properties of discussion threads better than \cite{Gomez2012}. Second, we compare both models for the task of recommending a post to a user than joins the discussion. We do all our experiments in two Reddit forums: \texttt{podemos} and \texttt{gameofthrones}.
 
@@ -417,17 +418,11 @@ Assuming that we know that a new user is going to participate in the discussion,
 \end{align*}
 Surprisingly, the post with the maximum likelihood is always the root.
 
-
 \begin{figure}
 \center
-\includegraphics[width=1\textwidth]{predictions_likelihood_podemos}
-\caption{Likelihood of post parents according two different models (Podemos)}
-\end{figure}
-
-\begin{figure}
-\center
-\includegraphics[width=1\textwidth]{benchmark_ranking2}
-\caption{Likelihood of post parents according two different models (Podemos)}
+\includegraphics[width=0.5\textwidth]{benchmark_ranking_by_threadsize}%
+\includegraphics[width=0.5\textwidth]{benchmark_ranking_by_chosen}
+\caption{Evluation of models for post recommendation (Podemos)}
 \end{figure}
 
 
