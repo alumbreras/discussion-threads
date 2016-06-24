@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  22 JUN 2016 16:44
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.3.11)  24 JUN 2016 08:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1173,48 +1173,48 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 File: benchmark_structures_gof.png Graphic file (type png)
 
 <use benchmark_structures_gof.png>
-Package pdftex.def Info: benchmark_structures_gof.png used on input line 404.
+Package pdftex.def Info: benchmark_structures_gof.png used on input line 405.
 (pdftex.def)             Requested size: 418.25368pt x 267.49095pt.
 
 <benchmark_structures_podemos.png, id=215, 653.44125pt x 417.05812pt>
 File: benchmark_structures_podemos.png Graphic file (type png)
 
 <use benchmark_structures_podemos.png>
-Package pdftex.def Info: benchmark_structures_podemos.png used on input line 40
-9.
+Package pdftex.def Info: benchmark_structures_podemos.png used on input line 41
+0.
 (pdftex.def)             Requested size: 418.25368pt x 266.9481pt.
-
-<predictions_likelihood_podemos.png, id=216, 652.68843pt x 417.05812pt>
-File: predictions_likelihood_podemos.png Graphic file (type png)
-
-<use predictions_likelihood_podemos.png>
-Package pdftex.def Info: predictions_likelihood_podemos.png used on input line 
-423.
-(pdftex.def)             Requested size: 418.25368pt x 267.2663pt.
-
-<benchmark_ranking2.png, id=217, 647.41875pt x 414.04688pt>
-File: benchmark_ranking2.png Graphic file (type png)
-
-<use benchmark_ranking2.png>
-Package pdftex.def Info: benchmark_ranking2.png used on input line 429.
-(pdftex.def)             Requested size: 418.25368pt x 267.49095pt.
  [8 <./benchmark_structures_gof.png (PNG copy)>]
-[9 <./benchmark_structures_podemos.png (PNG copy)> <./predictions_likelihood_po
-demos.png (PNG copy)>] (./genthreads.bbl [10 <./benchmark_ranking2.png (PNG cop
-y)>])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 454.
- [11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 454.
+<benchmark_ranking_by_threadsize.png, id=221, 568.37344pt x 403.5075pt>
+File: benchmark_ranking_by_threadsize.png Graphic file (type png)
+
+<use benchmark_ranking_by_threadsize.png>
+Package pdftex.def Info: benchmark_ranking_by_threadsize.png used on input line
+ 423.
+(pdftex.def)             Requested size: 209.12683pt x 148.46423pt.
+
+<benchmark_ranking_by_chosen.png, id=222, 568.37344pt x 403.5075pt>
+File: benchmark_ranking_by_chosen.png Graphic file (type png)
+
+<use benchmark_ranking_by_chosen.png>
+Package pdftex.def Info: benchmark_ranking_by_chosen.png used on input line 424
+.
+(pdftex.def)             Requested size: 209.12683pt x 148.46423pt.
+ [9 <./benchmark_structures_podemos.png (PNG copy)> <./benchmark_ranking_by_thr
+eadsize.png (PNG copy)> <./benchmark_ranking_by_chosen.png (PNG copy)>] (./gent
+hreads.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 449.
+ [10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 449.
  (./genthreads.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 454.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 454.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 449.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 449.
 Package rerunfilecheck Info: File `genthreads.out' has not changed.
 (rerunfilecheck)             Checksum: 3D8F585F02500430FD4CE0F55CE0755E;969.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 454.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 449.
  ) 
 Here is how much of TeX's memory you used:
- 18203 strings out of 494902
- 312406 string characters out of 6177496
+ 18201 strings out of 494902
+ 312432 string characters out of 6177496
  396418 words of memory out of 5000000
  20984 multiletter control sequences out of 15000+600000
  15250 words of font info for 59 fonts, out of 8000000 for 9000
@@ -1247,10 +1247,10 @@ fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm7.pfb>
-Output written on genthreads.pdf (11 pages, 759408 bytes).
+Output written on genthreads.pdf (10 pages, 844536 bytes).
 PDF statistics:
- 355 PDF objects out of 1000 (max. 8388607)
- 298 compressed objects within 3 object streams
- 68 named destinations out of 1000 (max. 500000)
+ 349 PDF objects out of 1000 (max. 8388607)
+ 293 compressed objects within 3 object streams
+ 66 named destinations out of 1000 (max. 500000)
  178 words of extra memory for PDF output out of 10000 (max. 10000000)
 

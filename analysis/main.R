@@ -15,10 +15,10 @@ df.trees$userint <- match(df.trees$user, users)
 trees <- lapply(trees, function(t) {V(t)$userint <- match(V(t)$user, users);t})
 
 if(FALSE){
-save(trees, file=paste0('data/trees.', subforum, '.rda'))
-save(df.trees, file=paste0('data/df.trees.', subforum, '.rda'))
-load(paste0('data/trees.', subforum, '.rda'))
-load(paste0('data/df.trees.', subforum, '.rda'))
+  save(trees, file=paste0('data/trees.', subforum, '.rda'))
+  save(df.trees, file=paste0('data/df.trees.', subforum, '.rda'))
+  load(paste0('data/trees.', subforum, '.rda'))
+  load(paste0('data/df.trees.', subforum, '.rda'))
 }
 
 # Estimate parameters for Gomez 2013 and Lumbreras 2016:
@@ -44,10 +44,10 @@ plot(rowSums(params.lumbreras$traces), type='b')
 title('\n Likelihood')
 
 if(FALSE){
-save(params.gomez, file=paste0('data/params.gomez.', subforum, '.rda'))
-save(params.lumbreras, file=paste0('data/params.lumbreras.', subforum, '.rda'))
-load(paste0('data/params.gomez.', subforum, '.rda'))
-load(paste0('data/params.lumbreras.', subforum, '.rda'))
+  save(params.gomez, file=paste0('data/params.gomez.', subforum, '.rda'))
+  save(params.lumbreras, file=paste0('data/params.lumbreras.', subforum, '.rda'))
+  load(paste0('data/params.gomez.', subforum, '.rda'))
+  load(paste0('data/params.lumbreras.', subforum, '.rda'))
 }
 
 # Compare likelihood Gomez2013 and Lumbreras2016 over the trees
@@ -67,10 +67,10 @@ trees.lumbreras <- generate_trees(model='Lumbreras2016', params=params.lumbreras
                                   sizes=sizes, user.sample=df.trees$userint)
 
 if(FALSE){
-save(trees.gomez, file = paste0('data/trees.gomez.',subforum, '.rda'))
-save(trees.lumbreras, file = paste0('data/trees.lumbreras.',subforum, '.rda'))
-load(paste0('data/trees.gomez.',subforum, '.rda'))
-load(paste0('data/trees.lumbreras.',subforum, '.rda'))
+  save(trees.gomez, file = paste0('data/trees.gomez.',subforum, '.rda'))
+  save(trees.lumbreras, file = paste0('data/trees.lumbreras.',subforum, '.rda'))
+  load(paste0('data/trees.gomez.',subforum, '.rda'))
+  load(paste0('data/trees.lumbreras.',subforum, '.rda'))
 }
 
 # Compare genetared threads (plot degree distributions, etc)
@@ -79,4 +79,13 @@ compare_trees(trees, trees.lumbreras, trees.gomez)
 
 # Compare how good are both models to make posts recommendations
 # (if we recommend the most likely parent)
-compare_link_prediction(trees, param.lumbreras, params.gomez)
+cl <- makeCluster(detectCores()-2)
+clusterExport(cl, c("compare_link_prediction", "params.lumbreras", "params.gomez"))
+clusterEvalQ(cl, {library(igraph)})
+df.preds <- parLapply(cl, trees, function(tree) compare_link_prediction(tree, params.lumbreras, params.gomez)) %>% 
+  rbindlist %>% 
+  as.data.frame
+stopCluster(cl)
+
+plot_ranking_benchmarks(df.preds)
+

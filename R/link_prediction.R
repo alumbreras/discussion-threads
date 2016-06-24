@@ -10,7 +10,7 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
   df.preds <- data.frame()
   # skip root and first post
   for(t in 2:length(parents)){
-   
+    
     # Data common two all models
     b <- rep(0,t)
     lags <- t:1
@@ -29,8 +29,8 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
     predicted.lumbreras <- which.max(probs.lumbreras)
     like.lumbreras <- log(probs.lumbreras[chosen]) - log(sum(probs.lumbreras))
     ranking.lumbreras <- rank(-probs.lumbreras)[chosen] 
-      
-      
+    
+    
     # Gomez 2013
     alpha <- params.gomez[1]
     beta <- params.gomez[2]
@@ -59,85 +59,98 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
   df.preds
 }
 
-cl <- makeCluster(detectCores()-2)
-clusterExport(cl, c("compare_link_prediction", "params.lumbreras", "params.gomez"))
-clusterEvalQ(cl, {library(igraph)})
 
-df.preds <- parLapply(cl, trees, function(tree) compare_link_prediction(tree, params.lumbreras, params.gomez)) %>% 
-            rbindlist %>% 
-            as.data.frame
 
-stopCluster(cl)
-
-# clean the few NA rows (maybe due to taus near 1)
-df.preds <- df.preds[complete.cases(df.preds),] 
-
-# Add baseline predictions
-df.preds <- mutate(df.preds, like.baseline=log(1/tree.size))
-df.preds <- mutate(df.preds, predicted.baseline=1)
-
-# Compute cummulative hits
-df.preds <- mutate(df.preds, hit.gomez = cumsum(as.numeric(predicted.gomez==chosen)))
-df.preds <- mutate(df.preds, hit.lumbreras = cumsum(as.numeric(predicted.lumbreras==chosen)))
-df.preds <- mutate(df.preds, hit.baseline = cumsum(as.numeric(predicted.baseline==chosen)))
-
-if(FALSE){
- save(df.preds, file='data/df.preds.gameofthrones.rda')
- load('data/df.preds.gameofthrones.rda')
+plot_ranking_benchmarks <- function(df.preds){
+  
+  # clean the few NA rows (maybe due to taus near 1)
+  df.preds <- df.preds[complete.cases(df.preds),] 
+  
+  # Add baseline predictions
+  df.preds <- mutate(df.preds, like.baseline=log(1/tree.size))
+  df.preds <- mutate(df.preds, predicted.baseline=1)
+  
+  # Compute cummulative hits
+  df.preds <- mutate(df.preds, hit.gomez = cumsum(as.numeric(predicted.gomez==chosen)))
+  df.preds <- mutate(df.preds, hit.lumbreras = cumsum(as.numeric(predicted.lumbreras==chosen)))
+  df.preds <- mutate(df.preds, hit.baseline = cumsum(as.numeric(predicted.baseline==chosen)))
+  
+  if(FALSE){
+    save(df.preds, file='data/df.preds.gameofthrones.rda')
+    load('data/df.preds.gameofthrones.rda')
+  }
+  
+  cum.hits.gomez <- cumsum(df.preds$hit.gomez)  
+  cum.hits.lumbreras <- cumsum(df.preds$hit.lumbreras)  
+  cum.hits.baseline <- cumsum(df.preds$hit.baseline)
+  
+  par(mfrow=c(1,1))
+  vmax <- max(c(cum.hits.baseline, cum.hits.gomez, cum.hits.lumbreras))
+  vmin <- min(c(cum.hits.baseline, cum.hits.gomez, cum.hits.lumbreras))
+  plot(1:length(cum.hits.baseline), cum.hits.baseline, ylim=c(vmin,vmax), type='l', col='black', xlab="posts", ylab='hits')
+  lines(1:length(cum.hits.baseline), cum.hits.gomez, col='blue')
+  lines(1:length(cum.hits.baseline), cum.hits.lumbreras, col='red')
+  legend("bottomright", c('baseline', 'lumbreras', 'gomez'), col=c('black', 'red', 'blue'), pch=19, inset = 0.05)
+  title('Hits')
+  
+  cum.likes.gomez <- cumsum(df.preds$like.gomez)
+  cum.likes.lumbreras <- cumsum(df.preds$like.lumbreras)
+  cum.likes.baseline <- cumsum(df.preds$like.baseline)
+  
+  par(mfrow=c(1,1))
+  vmax <- max(c(cum.likes.baseline, cum.likes.gomez, cum.likes.lumbreras))
+  vmin <- min(c(cum.likes.baseline, cum.likes.gomez, cum.likes.lumbreras))
+  
+  plot(1:length(cum.likes.baseline), cum.likes.baseline, type='l', col='black', xlab="posts", ylab='likelihood')
+  lines(1:length(cum.likes.baseline), cum.likes.gomez, col='blue')
+  lines(1:length(cum.likes.baseline), cum.likes.lumbreras, col='red')
+  legend("topright", c('baseline', 'lumbreras', 'gomez'), col=c('black', 'red', 'blue'), pch=19, inset = 0.05)
+  title('Likelihood')
+  
+  # Recommender systems
+  ###############################'
+  # see grouped operations
+  #https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html
+  df.preds <- select(df.preds, -hit.gomez, -hit.baseline, -hit.lumbreras)
+  df.rankings <- select(df.preds, ranking.lumbreras, 
+                        ranking.gomez, 
+                        ranking.barabasi, 
+                        tree.size) %>% 
+    filter(tree.size<1000) %>%
+    melt(id.vars='tree.size', variable.name='model', value.name='rank')
+  
+  by_model <- group_by(df.rankings, model, tree.size) %>%
+    summarize(rank=mean(rank), rank.sd = sd(rank))
+  
+  ggplot(by_model, aes(x = tree.size, y=rank, group=model, color=model)) +
+    geom_point(alpha=0.2) +
+    scale_size_area() + 
+    geom_smooth() +
+    xlab("thread size") +
+    theme_bw()+
+    theme(text = element_text(size = 13),
+          legend.key = element_blank(),
+          aspect.ratio = 1)
+  
+  # Plot by position of chosen parent (depth and/or order)
+  df.rankings <- select(df.preds, ranking.lumbreras, 
+                        ranking.gomez, 
+                        ranking.barabasi, 
+                        tree.size, chosen) %>% 
+    filter(tree.size<1000) %>%
+    melt(id.vars='chosen', variable.name='model', value.name='rank')
+  
+  by_model <- group_by(df.rankings, model, chosen) %>%
+    summarize(rank=mean(rank), rank.sd = sd(rank))
+  
+  ggplot(by_model, aes(x = chosen, y=rank, group=model, color=model)) +
+    geom_point(alpha=0.2) +
+    scale_size_area() + 
+    geom_smooth() +
+    xlab("chosen") +
+    theme_bw()+
+    theme(text = element_text(size = 13),
+          #legend.key = element_blank(),
+          aspect.ratio = 1)
 }
-
-cum.hits.gomez <- cumsum(df.preds$hit.gomez)  
-cum.hits.lumbreras <- cumsum(df.preds$hit.lumbreras)  
-cum.hits.baseline <- cumsum(df.preds$hit.baseline)
-
-par(mfrow=c(1,1))
-vmax <- max(c(cum.hits.baseline, cum.hits.gomez, cum.hits.lumbreras))
-vmin <- min(c(cum.hits.baseline, cum.hits.gomez, cum.hits.lumbreras))
-plot(1:length(cum.hits.baseline), cum.hits.baseline, ylim=c(vmin,vmax), type='l', col='black', xlab="posts", ylab='hits')
-lines(1:length(cum.hits.baseline), cum.hits.gomez, col='blue')
-lines(1:length(cum.hits.baseline), cum.hits.lumbreras, col='red')
-legend("bottomright", c('baseline', 'lumbreras', 'gomez'), col=c('black', 'red', 'blue'), pch=19, inset = 0.05)
-title('Hits')
-
-cum.likes.gomez <- cumsum(df.preds$like.gomez)
-cum.likes.lumbreras <- cumsum(df.preds$like.lumbreras)
-cum.likes.baseline <- cumsum(df.preds$like.baseline)
-
-par(mfrow=c(1,1))
-vmax <- max(c(cum.likes.baseline, cum.likes.gomez, cum.likes.lumbreras))
-vmin <- min(c(cum.likes.baseline, cum.likes.gomez, cum.likes.lumbreras))
-
-plot(1:length(cum.likes.baseline), cum.likes.baseline, type='l', col='black', xlab="posts", ylab='likelihood')
-lines(1:length(cum.likes.baseline), cum.likes.gomez, col='blue')
-lines(1:length(cum.likes.baseline), cum.likes.lumbreras, col='red')
-legend("topright", c('baseline', 'lumbreras', 'gomez'), col=c('black', 'red', 'blue'), pch=19, inset = 0.05)
-title('Likelihood')
-
-# Recommender systems
-###############################'
-# see grouped operations
-#https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html
-df.preds <- select(df.preds, -hit.gomez, -hit.baseline, -hit.lumbreras)
-df.rankings <- select(df.preds, ranking.lumbreras, 
-                                ranking.gomez, 
-                                ranking.barabasi, 
-                                tree.size) %>% 
-               filter(tree.size<1000) %>%
-               melt(id.vars='tree.size', variable.name='model', value.name='rank')
-
-by_model <- group_by(df.rankings, model, tree.size) %>%
-            summarize(rank.mean=mean(rank), rank.sd = sd(rank))
-
-ggplot(by_model, aes(x = tree.size, y=rank.mean, group=model, color=model)) +
-  geom_point() +
-  scale_size_area() + 
-  geom_smooth() +
-  theme_bw()
-
-
-# Plot by position of chosen parent (depth and/or order)
-
-
-
-
 
