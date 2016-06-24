@@ -41,6 +41,17 @@ figures to analyse their properties:
   * x: subtree sizes y: probabilities (log-log)
   * x: size y: depth (log-log)
 
+**link_prediction.R**
+
+
+Compare Gomez 2013, Lumbreras 2016 and baselines for the task of predicting the parent.
+Specifically, we rank posts according to their likelihood of being the next parent.
+  
+ * predict()
+ * plot_ranking_benchmarks()
+
+
+
 #### Other scripts
 
 **estimate_params_Gomez2013.r**:
