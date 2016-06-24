@@ -122,7 +122,7 @@ df.rankings <- select(df.preds, ranking.lumbreras,
                                 ranking.gomez, 
                                 ranking.barabasi, 
                                 tree.size) %>% 
-               filter(tree.size<250) %>%
+               filter(tree.size<1000) %>%
                melt(id.vars='tree.size', variable.name='model', value.name='rank')
 
 by_model <- group_by(df.rankings, model, tree.size) %>%
@@ -132,10 +132,10 @@ ggplot(by_model, aes(x = tree.size, y=rank.mean, group=model, color=model)) +
   geom_point() +
   scale_size_area() + 
   geom_smooth() +
-  theme_classic()
+  theme_bw()
 
 
-# Plot by...
+# Plot by position of chosen parent (depth and/or order)
 
 
 
