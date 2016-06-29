@@ -1,6 +1,7 @@
 library(dplyr)
-
-#' Creates a dataframe with predictions and real choices
+library(ggplot2)
+#' Creates a dataframe with predictions from different models 
+#' and real choices
 compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
   # We can compare with barabasi because the choice is independent of the alpha
   parents <- get.edgelist(tree, names=FALSE)[,2] # parents vector
@@ -14,6 +15,7 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
     # Data common two all models
     b <- rep(0,t)
     lags <- t:1
+    lags.inv <- 1:t
     popularities <- 1 + tabulate(parents[1:(t-1)], nbins=t)
     popularities[1] <- popularities[1] - 1 # root has no parent
     
@@ -41,20 +43,42 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
     like.gomez <- log(probs.gomez[chosen]) - log(sum(probs.gomez))
     ranking.gomez <- rank(-probs.gomez)[chosen] 
     
+    # Kumar 2010 (TODO. Need params.kumar)
+    
+    #Time ellapsed between post and parent (or post and root)
+    time.to.parent <- V(tree)$date[t+1] - V(tree)$date[chosen]
+    time.to.root <- V(tree)$date[t+1] - V(tree)$date[1]
+    
     # Barabasi
     probs.barabasi <- alpha*popularities
     predicted.barabasi <- which.max(alpha*popularities)
     ranking.barabasi <- rank(-probs.barabasi)[chosen] 
     
+    # Naive sorted
+    probs.tau <- tau^lags
+    predicted.tau <-  which.max(probs.tau)
+    ranking.tau <- rank(-probs.tau)[chosen]
+    
+    # Naive sorted inverse
+    probs.tau.inv <- tau^lags.inv
+    predicted.tau.inv <-  which.max(probs.tau.inv) 
+    ranking.tau.inv <- rank(-probs.tau.inv)[chosen]
+    
     df.preds <- rbind(df.preds, 
                       c(predicted.lumbreras, like.lumbreras, ranking.lumbreras,
                         predicted.gomez, like.gomez, ranking.gomez,
                         predicted.barabasi, ranking.barabasi,
+                        predicted.tau, ranking.tau,
+                        predicted.tau.inv, ranking.tau.inv,
+                        time.to.parent, time.to.root,
                         t, chosen))
   }
   names(df.preds) <- c('predicted.lumbreras', 'like.lumbreras', 'ranking.lumbreras',
                        'predicted.gomez', 'like.gomez', 'ranking.gomez',
                        'predicted.barabasi', 'ranking.barabasi',
+                       'predicted.tau', 'ranking.tau',
+                       'predicted.tau.inv', 'ranking.tau.inv',
+                       'time.to.parent', 'time.to.root',
                        'tree.size', 'chosen')
   df.preds
 }
@@ -74,11 +98,10 @@ plot_ranking_benchmarks <- function(df.preds){
   df.preds <- mutate(df.preds, hit.gomez = cumsum(as.numeric(predicted.gomez==chosen)))
   df.preds <- mutate(df.preds, hit.lumbreras = cumsum(as.numeric(predicted.lumbreras==chosen)))
   df.preds <- mutate(df.preds, hit.baseline = cumsum(as.numeric(predicted.baseline==chosen)))
-  
-  if(FALSE){
-    save(df.preds, file='data/df.preds.gameofthrones.rda')
-    load('data/df.preds.gameofthrones.rda')
-  }
+
+  # Seconds to minutes
+  df.preds <- mutate(df.preds, mins.to.parent = floor(time.to.parent/60))
+  df.preds <- mutate(df.preds, mins.to.root = floor(time.to.root/60))
   
   cum.hits.gomez <- cumsum(df.preds$hit.gomez)  
   cum.hits.lumbreras <- cumsum(df.preds$hit.lumbreras)  
@@ -114,7 +137,9 @@ plot_ranking_benchmarks <- function(df.preds){
   df.preds <- select(df.preds, -hit.gomez, -hit.baseline, -hit.lumbreras)
   df.rankings <- select(df.preds, ranking.lumbreras, 
                         ranking.gomez, 
-                        ranking.barabasi, 
+                        ranking.barabasi,
+                        ranking.tau,
+                        ranking.tau.inv,
                         tree.size) %>% 
     filter(tree.size<1000) %>%
     melt(id.vars='tree.size', variable.name='model', value.name='rank')
@@ -122,20 +147,24 @@ plot_ranking_benchmarks <- function(df.preds){
   by_model <- group_by(df.rankings, model, tree.size) %>%
     summarize(rank=mean(rank), rank.sd = sd(rank))
   
-  ggplot(by_model, aes(x = tree.size, y=rank, group=model, color=model)) +
-    geom_point(alpha=0.2) +
-    scale_size_area() + 
-    geom_smooth() +
-    xlab("thread size") +
-    theme_bw()+
-    theme(text = element_text(size = 13),
-          legend.key = element_blank(),
-          aspect.ratio = 1)
+  g <-ggplot(by_model, aes(x = tree.size, y=rank, group=model, color=model)) +
+      geom_point(alpha=0.1) +
+      scale_size_area() + 
+      geom_smooth() +
+      xlab("thread size") +
+      theme_bw()+
+      theme(text = element_text(size = 13),
+            legend.key = element_blank(),
+            aspect.ratio = 1)
+  
+  print(g)
   
   # Plot by position of chosen parent (depth and/or order)
   df.rankings <- select(df.preds, ranking.lumbreras, 
                         ranking.gomez, 
                         ranking.barabasi, 
+                        ranking.tau,
+                        ranking.tau.inv,
                         tree.size, chosen) %>% 
     filter(tree.size<1000) %>%
     melt(id.vars='chosen', variable.name='model', value.name='rank')
@@ -143,14 +172,63 @@ plot_ranking_benchmarks <- function(df.preds){
   by_model <- group_by(df.rankings, model, chosen) %>%
     summarize(rank=mean(rank), rank.sd = sd(rank))
   
-  ggplot(by_model, aes(x = chosen, y=rank, group=model, color=model)) +
-    geom_point(alpha=0.2) +
+  g <- ggplot(by_model, aes(x = chosen, y=rank, group=model, color=model)) +
+      geom_point(alpha=0.1) +
+      scale_size_area() + 
+      geom_smooth() +
+      xlab("chosen") +
+      theme_bw()+
+      theme(text = element_text(size = 13),
+            aspect.ratio = 1)
+  print(g)
+  
+  # Plot by minutes to parent
+  df.rankings <- select(df.preds, ranking.lumbreras, 
+                        ranking.gomez, 
+                        ranking.barabasi, 
+                        ranking.tau,
+                        ranking.tau.inv,
+                        tree.size,
+                        mins.to.parent) %>% 
+    filter(mins.to.parent<60*24*30) %>%
+    melt(id.vars='mins.to.parent', variable.name='model', value.name='rank')
+  
+  by_model <- group_by(df.rankings, model, mins.to.parent) %>%
+    summarize(rank=mean(rank), rank.sd = sd(rank))
+  
+  g <- ggplot(by_model, aes(x = mins.to.parent, y=rank, group=model, color=model)) +
+    geom_point(alpha=0.1) +
     scale_size_area() + 
     geom_smooth() +
-    xlab("chosen") +
+    xlab("mins to parent") +
     theme_bw()+
     theme(text = element_text(size = 13),
-          #legend.key = element_blank(),
           aspect.ratio = 1)
+  print(g)
+  
+  # Plot by minutes to root (time of thread)
+  df.rankings <- select(df.preds, ranking.lumbreras, 
+                        ranking.gomez, 
+                        ranking.barabasi, 
+                        ranking.tau,
+                        ranking.tau.inv,
+                        tree.size,
+                        mins.to.root) %>% 
+    filter(mins.to.root<60*24*30) %>%
+    melt(id.vars='mins.to.root', variable.name='model', value.name='rank')
+  
+  by_model <- group_by(df.rankings, model, mins.to.root) %>%
+    summarize(rank=mean(rank), rank.sd = sd(rank))
+  
+  g <- ggplot(by_model, aes(x = mins.to.root, y=rank, group=model, color=model)) +
+    geom_point(alpha=0.1) +
+    scale_size_area() + 
+    geom_smooth() +
+    xlab("mins to root") +
+    theme_bw()+
+    theme(text = element_text(size = 13),
+          aspect.ratio = 1)
+  print(g)
+  
 }
 
