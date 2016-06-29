@@ -88,17 +88,19 @@ tree_to_data <- function(g, thread=0){
 
   parents <- get.edgelist(g, names=FALSE)[,2] # parents vector without the first two posts
   authors <- V(g)$user[-1] # remove first post
-  authors.ints <- V(g)$userint[-1]
   popularities <- c(1,sapply(2:length(parents), function(t) 1 + sum(parents[1:(t-1)]==parents[t])))
   posts <- 2:(length(parents)+1)
   data <- data.frame(thread = rep(thread, length(posts)),
                      user = authors,
-                     userint = authors.ints,
                      post = posts,
                      t = 1:(length(parents)),
                      parent = parents,
                      popularity = popularities)
 
+  if ('userint' %in% list.vertex.attributes(g)){
+    data$userint <- V(g)$userint[-1]
+  }
+  
   data <- mutate(data, lag=t-parent+1)
   data
 }

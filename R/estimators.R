@@ -49,7 +49,8 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
 
 
 
-  U <- length(unique(df.trees$userint))
+  U <- max(df.trees$userint) # there will be unised rows (test set). That's ok.
+  userints <- sort(unique(df.trees$userint))
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
@@ -59,6 +60,10 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
   responsabilities <- matrix(1/K, nrow = U, ncol = K)
   pis <- rep(1/ncol(responsabilities), ncol(responsabilities))
 
+  # add user names
+  #userints <- df.trees$userint
+  #
+  
   traces <- matrix(0, nrow=niters, ncol=K)
   likes <- rep(NA, niters)
   for(iter in 1:niters){
@@ -67,7 +72,7 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # Given the parameters of each cluster, find the responsability of each user in each cluster
     #################################################################
     cat("\nExpectation...")
-    responsabilities <- foreach(u=1:U, .packages=c('dplyr'), .export=c('likelihood_post'), .combine=rbind) %dopar%
+    responsabilities <- foreach(u=userints, .packages=c('dplyr'), .export=c('likelihood_post'), .combine=rbind) %dopar%
                             update_responsabilities(df.trees, u, pis, alphas, betas, taus)
 
     cat("\nCluster distribution:\n", colSums(responsabilities))
@@ -129,3 +134,5 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
        users=users)
 
 }
+
+

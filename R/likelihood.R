@@ -71,7 +71,7 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
 #' @return loglikelihood of the dataset
 #' @export
 likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
-  df.trees <- filter(df.trees, t>1)
+  df.trees <- filter(df.trees, t>1, !is.na(userint))
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus
