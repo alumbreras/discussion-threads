@@ -1,3 +1,6 @@
+this.dir <- dirname(parent.frame(2)$ofile)
+setwd(this.dir)
+
 source('R/datasets.R')
 source('R/estimators.R')
 source('R/extract_from_db.R')
