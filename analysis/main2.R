@@ -1,60 +1,40 @@
-# Main script
+# Main script (newest, end August)
 # Compute parameters of all the models,
 # compute their likelihood and their raking precission
 
 # Compares Gomez 2013 and Lumbreras 2016 on a reddit forum
 # author: Alberto Lumbreras
-###########################################################
-# Load dataframe representation of trees
-#subforum <- 'podemos'
-
-################################################################################
 ################################################################################
 
-subforum <- 'MachineLearning'
+# Prepare the data
+#######################################
+df.trees <- readRDS("data/df.trees.rds")
+df.trees <- df.trees %>% filter(user.rank <= 1000)
 
+# mark as training,  validation and test 60/20/20
+# or mark fold 1, fold 2...
+df.trees <- df.trees[sample(nrow(df.trees)), ]
+df.trees <- df.trees %>% 
+  group_by(user) %>% 
+    mutate(split = ifelse(row_number() <= 0.5*n(), "train", "test")) %>%
+  ungroup
 
-trees <- load_trees(forum="reddit", subforum=subforum, min.size=10)#[1:1000]
-df.trees <- trees_to_dataframe(trees)
+# We'll identify each user by its rank
+df.trees <- df.trees %>% mutate(userint = user.rank)
+df.trees.train <- df.trees %>% filter(split == 'train') %>% select(userint, t, popularity, parent, lag)
+df.trees.test <- df.trees %>% filter(split == 'test') %>% select(userint, t, popularity, parent, lag)
 
-if(FALSE){
-  save(trees, file=paste0('data/trees.', subforum, '.rda'))
-  save(df.trees, file=paste0('data/df.trees.', subforum, '.rda'))
-  load(paste0('data/trees.', subforum, '.rda'))
-  load(paste0('data/df.trees.', subforum, '.rda'))
-  
-  df.trees <- readRDS("mymodel.rds")
-}
+# Remove the non-numeric rows to avoid issues when using apply
+# over rows
 
-# Training / Test
-ntrees <- length(trees)
-idx.train <- sample(ntrees, ntrees*0.5, replace=FALSE)
-trees.train <- trees[idx.train]
-trees.test <- trees[-idx.train]
-df.trees.train <- filter(df.trees, thread %in% idx.train)
-df.trees.test <- filter(df.trees, ! (thread %in% idx.train))
-
-# In case users are string names, we give each user a unique integer id
-# ids are given according to the user frequency (though not necessary)
-#users <- names(sort(table(df.trees.train$user), decreasing = TRUE))
-users <- df.trees.train %>% count(user) %>% filter(n>0) %>% 
-         arrange(desc(n)) %>% select(user) %>% unlist(use.names=FALSE)
-df.trees.train$userint <- match(df.trees.train$user, users)
-df.trees.test$userint <- match(df.trees.test$user, users)
-
-# users in train and test (only FYI)
-df.users <- merge(df.trees.train %>% count(user) %>% filter(n>0) ,
-                  df.trees.test %>% count(user) %>% filter(n>0), by='user') %>% 
-            arrange(desc(n.x))
-
-trees.train <- lapply(trees.train, function(t) {V(t)$userint <- match(V(t)$user, users);t})
-trees.test <- lapply(trees.test, function(t) {V(t)$userint <- match(V(t)$user, users);t})
-
-
-###############################################################
-
+# Estimate 
+#####################################
 # Estimate parameters for Gomez 2013
-params.gomez <- estimation_Gomez2013(df.trees.train, runif(3))
+list.params <- list(alpha = runif(1),
+                    beta = runif(1),
+                    tau = runif(1))
+params.gomez <- estimation_Gomez2013(df.trees.train, list.params)
+
 
 # Estimate parameters for Lumbreras for k=2,..,10
 params.lumbreras.list <- list()

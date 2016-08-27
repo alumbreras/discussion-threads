@@ -10,19 +10,20 @@ library(igraph)
 #' Build a set of tree objects from the information in the database
 #' @param forum the forum (reddit, slashdot,...)
 #' @param subforum the subforum (topic)
+#' @params min.size minimum thread size.
 #' @details This function builds a set of tree objects from the information stored in the databased.
 #' For instance, if forum='reddit' and subforum='gameofthrones' then it will extract all posts in the
 #' reddit database that belong to gameofthrones and will build a list of trees where every tree represents
 #' a discussion thread in gameofthrones.
-#' @return a list of trees
+#' @return a list of trees as igraph objects
 #' @export
-load_trees <- function(forum='reddit', subforum='gameofthrones'){
+load_trees <- function(forum='reddit', subforum='gameofthrones', min.size=10){
 
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
 
   load(paste0('./data/dfposts_', subforum, '.Rda'))
-  df.threads <- plyr::count(df.posts, "thread") %>% filter(freq>10)
+  df.threads <- plyr::count(df.posts, "thread") %>% filter(freq > min.size)
 
   # Extract graphs of threads. Ignore NA graphs (exceptions due, e.g. to root not being the oldest post)
   clusterEvalQ(cl, {
@@ -37,6 +38,45 @@ load_trees <- function(forum='reddit', subforum='gameofthrones'){
 
   trees
 }
+
+
+#' Build a set of tree objects from the information in the dataframe
+#' @param forum the forum (reddit, slashdot,...)
+#' @param subforum the subforum (topic)
+#' @params min.size minimum thread size.
+#' @details This function builds a set of tree objects from the posts information stored in a dataframe.
+#' For instance, if forum='reddit' and subforum='gameofthrones' then it will extract all posts in the
+#' reddit database that belong to gameofthrones and will build a list of trees where every tree represents
+#' a discussion thread in gameofthrones.
+#' @return a list of trees as igraph objects
+#' @export
+load_trees_from_dataframe <- function(subforum='gameofthrones', min.size=10){
+  
+  ncores <- detectCores() - 2
+  cl <- makeCluster(ncores, outfile="", port=11439)
+  
+  load(paste0('./data/dfposts_', subforum, '.Rda'))
+  df.threads <- plyr::count(df.posts, "thread") %>% filter(freq > min.size)
+  
+  # Extract graphs of threads. Ignore NA graphs (exceptions due, e.g. to root not being the oldest post)
+  clusterEvalQ(cl, {
+    library(igraph); library(RSQLite); source('R/extract_from_db.R');
+    con <- dbConnect(dbDriver("SQLite"), dbname = paste0("./data/reddit.db"));
+  })
+  trees <- parLapply(cl, df.threads$thread, function(x) database.to.graph(x, con=con, 'reddit'))
+  idx <- sapply(1:length(trees), function(i) class(trees[[i]])!='try-error') # detect NA results
+  trees <- parLapply(cl, trees[idx], function(x) x$gp)
+  
+  stopCluster(cl)
+  
+  trees
+}
+
+
+
+
+
+
 
 
 #' Generate n trees of sizes s following according to a model with given parameters
@@ -85,23 +125,49 @@ tree_to_data <- function(g, thread=0){
   # and columns "degree of parent", "is_parent_root", "lag to parent", and "t"
   # With the model parameters, the three first columns are used to compute the numerator the likelihood
   # and 't' to compute the denominator of the likelihood
-
-  parents <- get.edgelist(g, names=FALSE)[,2] # parents vector without the first two posts
-  authors <- V(g)$user[-1] # remove first post
-  popularities <- c(1,sapply(2:length(parents), function(t) 1 + sum(parents[1:(t-1)]==parents[t])))
+  if(vcount(g)==1) stop("Thread has length 1")
+  parents <- get.edgelist(g, names=FALSE)[,2] # parents vector (the first parent is always the root)
+  authors.all <- V(g)$user
+  authors <- authors.all[-1] # remove root since it is not in parents vector
+  postid <- V(g)$name[-1]
+    
+  # (first choice is always the root, with starts with degree 1 by convention)
+  if(length(parents)==1){
+    popularities <- 1
+  }else{
+    popularities <- c(1, 
+                      sapply(2:length(parents), function(t){
+                        1 + sum(parents[1:(t-1)]==parents[t])
+                        })
+                      )
+  }
+  
+  # is the post a reply a <- b <- a ?
+  grandparents <- sapply(seq_along(parents), function(t){
+                    if(parents[t]==1){
+                      FALSE
+                    }else{
+                      authors[t]==authors.all[parents[parents[t]-1]]
+                    }
+                  })
+  
   posts <- 2:(length(parents)+1)
-  data <- data.frame(thread = rep(thread, length(posts)),
+  data <- data.frame(thread = thread,
                      user = authors,
-                     post = posts,
-                     t = 1:(length(parents)),
-                     parent = parents,
-                     popularity = popularities)
+                     post = posts, # post order
+                     postid = postid,
+                     t = 1:(length(parents)), # post time slot
+                     parent = parents, # post parent
+                     popularity = popularities,
+                     grandparent = grandparents)
+          
+  data <- data %>% mutate(lag = t - parent + 1)
 
+  # If there is a user integer identifier, use it
+  # that is to place a user in a fixed and known row when doing EM computations
   if ('userint' %in% list.vertex.attributes(g)){
     data$userint <- V(g)$userint[-1]
   }
-  
-  data <- mutate(data, lag=t-parent+1)
   data
 }
 

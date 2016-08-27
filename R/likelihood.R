@@ -14,9 +14,13 @@ library(parallel)
 #' @param tau recency parameter
 #' @return loglikelihood of the post
 #' @export
-likelihood_post <- function(row, alpha, beta, tau){
-  (log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) -
-     log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1)))
+likelihood_post <- function(row, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  
+  c(as.matrix(log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) -
+     log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
   # -1/2 because root has at least degree 1 (to follow Gomez 2013)
   # if the root starts with degree 0, then it should be:
   # log(2*alpha*(row['t']-1)   + beta + tau*(tau^row['t']-1)/(tau-1))
@@ -24,25 +28,31 @@ likelihood_post <- function(row, alpha, beta, tau){
 
 
 #' Total likelihood of a dataframe according to Gomez2013
-#' @param df.trees data.frame with one post per row and features in columns
-#' @param model parameters
+#' @param df.trees data.frame with one post per row and features in columns.
+#' @param list of model parameters
 #' @return loglikelihood of the dataset
+#' @details df.tree must not have any non-numerical value since the internal apply
+#' won't know how to deal with that
 #' @export
 likelihood_Gomez2013 <- function(df.trees, params){
   df.trees <- filter(df.trees, t>1)
-  sum(apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3])))
+  #sum(apply(df.trees, 1, function(x) likelihood_post(x, params[1], params[2], params[3])))
+  sum(apply(df.trees, 1, function(x) likelihood_post(x, params)))
 }
 
 #' The part of the lower bound that we optimize in the M-step
+#' @param params vector of initial parameters
 Qopt <- function(params, df.trees, responsabilities, pis, k){
   # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
   # given the current responsabilities
   # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  list.params <- list(alpha = params[1], beta = params[2], tau = params[3]) 
   df.trees <- filter(df.trees, t>1)
   a <- responsabilities[,k][df.trees$userint]
-  b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, list.params))
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
 
@@ -54,11 +64,12 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
   # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  list.params <- list(alpha = params[1], beta = params[2], tau = params[3]) 
   df.trees <- filter(df.trees, t>1)
   cl <- makeCluster(detectCores()-2)
   clusterExport(cl, c("likelihood_post", "params"))
   a <- responsabilities[,k][df.trees$userint]
-  b <- parApply(cl, df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
+  b <- parApply(cl, df.trees[-2], 1, function(x) likelihood_post(x, list.params))
   stopCluster(cl)
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
