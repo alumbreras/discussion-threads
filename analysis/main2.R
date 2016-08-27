@@ -5,11 +5,20 @@
 # Compares Gomez 2013 and Lumbreras 2016 on a reddit forum
 # author: Alberto Lumbreras
 ################################################################################
+source('R/datasets.R')
+source('R/estimators.R')
+source('R/extract_from_db.R')
+source('R/likelihood.R')
+source('R/plot_structural_properties.R')
+source('R/plotting.R')
+source('R/thread_generators.R')
+source('R/link_prediction.R')
 
 # Prepare the data
 #######################################
 df.trees <- readRDS("data/df.trees.rds")
 df.trees <- df.trees %>% filter(user.rank <= 1000)
+df.trees <- df.trees %>% filter(t>1) # t==1 is trivial, is always a reply to the root
 
 # mark as training,  validation and test 60/20/20
 # or mark fold 1, fold 2...
@@ -30,19 +39,20 @@ df.trees.test <- df.trees %>% filter(split == 'test') %>% select(userint, t, pop
 # Estimate 
 #####################################
 # Estimate parameters for Gomez 2013
-list.params <- list(alpha = runif(1),
+params <- list(alpha = runif(1),
                     beta = runif(1),
                     tau = runif(1))
-params.gomez <- estimation_Gomez2013(df.trees.train, list.params)
+params.gomez <- estimation_Gomez2013(head(df.trees.train,10000), params)
 
 
 # Estimate parameters for Lumbreras for k=2,..,10
 params.lumbreras.list <- list()
 for (k in 1:5){
   alphas <- runif(k)*2
-  betas <- runif(k)*100
+  betas <- runif(k)*2 #*100
   taus <- runif(k)
-  params <- list(alphas=alphas, betas=betas, taus=taus)
+  params <- list(alpha=alphas, beta=betas, tau=taus)
+  #params.lumbreras.list[[k]] <- estimation_Lumbreras2016(head(df.trees.train,1000), params)
   params.lumbreras.list[[k]] <- estimation_Lumbreras2016(df.trees.train, params)
 }
 
@@ -77,7 +87,9 @@ if(FALSE){
   load(paste0('data/params.lumbreras.', subforum, '.rda'))
 }
 
+################################################################################
 # Compare likelihood Gomez2013 and Lumbreras2016 over the trees
+################################################################################
 likelihood.gomez <- likelihood_Gomez2013(df.trees.test, params.gomez)
 likelihood.lumbreras <- likelihood_Lumbreras2016(df.trees.test, params.lumbreras, params.lumbreras$responsabilities, params.lumbreras$pis)
 likelihood.lumbreras.hard <- likelihood_Lumbreras2016_hard(df.trees.test, params.lumbreras, params.lumbreras$responsabilities)

@@ -34,11 +34,29 @@ likelihood_post <- function(row, params){
 #' @details df.tree must not have any non-numerical value since the internal apply
 #' won't know how to deal with that
 #' @export
-likelihood_Gomez2013 <- function(df.trees, params){
-  df.trees <- filter(df.trees, t>1)
-  #sum(apply(df.trees, 1, function(x) likelihood_post(x, params[1], params[2], params[3])))
+likelihood_Gomez2013_deprecated <- function(df.trees, params){
   sum(apply(df.trees, 1, function(x) likelihood_post(x, params)))
 }
+
+# x100 times faster (for large dataframes). Shame on you, Alberto.
+likelihood_Gomez2013 <- function(df.trees, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  sum(log(alpha*df.trees['popularity'] + beta*(df.trees['parent']==1) + tau^df.trees['lag']))-
+  sum(log(2*alpha*(df.trees['t']-1/2)   + beta + tau*(tau^df.trees['t']-1)/(tau-1)))
+}
+
+# like Gomez 2013 but does not make the sum
+#' @param params list of parameters
+likelihood_Gomez2013_all <- function(df.trees, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  log(alpha*df.trees['popularity'] + beta*as.numeric(df.trees['parent']==1) + tau^df.trees['lag'])-
+  log(2*alpha*(df.trees['t']-1/2)   + beta + tau*(tau^df.trees['t']-1)/(tau-1))
+}
+
 
 #' The part of the lower bound that we optimize in the M-step
 #' @param params vector of initial parameters
@@ -50,9 +68,22 @@ Qopt <- function(params, df.trees, responsabilities, pis, k){
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
   list.params <- list(alpha = params[1], beta = params[2], tau = params[3]) 
   df.trees <- filter(df.trees, t>1)
-  a <- responsabilities[,k][df.trees$userint]
-  #b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, params[1], params[2], params[3]))
-  b <- apply(df.trees[-2], 1, function(x) likelihood_post(x, list.params))
+  a <- responsabilities[,k][df.trees$id_]
+  b <- apply(df.trees, 1, function(x) likelihood_post(x, list.params))
+  log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
+}
+
+#'
+#' @param params array of parameters
+Qopt_opt <- function(params, df.trees, responsabilities, pis, k){
+  # E[lnp(X,Z|\theta)] likelihoods for clusters k and all users
+  # given the current responsabilities
+  # Note: pis do not affect the optimization. We include it so that the obtained value corresponds to
+  # the complete Q equation
+  # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
+  list.params <- list(alpha = params[1], beta = params[2], tau = params[3]) 
+  a <- responsabilities[,k][df.trees$id_]
+  b <- likelihood_Gomez2013_all(df.trees, list.params)
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
 
@@ -65,11 +96,10 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
   # the complete Q equation
   # This is similar to Bishop eq. 9.40, except that we loop over users, not over posts
   list.params <- list(alpha = params[1], beta = params[2], tau = params[3]) 
-  df.trees <- filter(df.trees, t>1)
   cl <- makeCluster(detectCores()-2)
   clusterExport(cl, c("likelihood_post", "params"))
   a <- responsabilities[,k][df.trees$userint]
-  b <- parApply(cl, df.trees[-2], 1, function(x) likelihood_post(x, list.params))
+  b <- parApply(cl, df.trees, 1, function(x) likelihood_post(x, list.params))
   stopCluster(cl)
   log(pis[k])*sum(responsabilities[,k]) + sum(a*b)
 }
@@ -82,16 +112,16 @@ Qopt.par <- function(params, df.trees, responsabilities, pis, k){
 #' @return loglikelihood of the dataset
 #' @export
 likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
-  df.trees <- filter(df.trees, t>1, !is.na(userint))
-  alphas <- params$alphas
-  betas <- params$betas
-  taus <- params$taus
+  #df.trees <- filter(!is.na(id_))
+  alphas <- params$alpha
+  betas <- params$beta
+  taus <- params$tau
   like <- 0
   K <- length(alphas)
 
   # Q (see Bishop Eq. 9.40, p.443)
   Q <- 0
-  U <- length(unique(df.trees$userint))
+  U <- length(unique(df.trees$id_))
 
 
   # The next loop does the same than this one but in a vectorized way
@@ -102,7 +132,7 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
   #  }
   #}
   for(k in 1:K){
-    Q <- Q + Qopt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, k)
+    Q <- Q + Qopt_opt(c(alphas[k], betas[k], taus[k]), df.trees, responsabilities, pis, k)
   }
 
   # Entropy of the posterior
@@ -127,7 +157,6 @@ likelihood_Lumbreras2016 <- function(df.trees, params, responsabilities, pis){
 #' @export
 likelihood_Lumbreras2016_hard <- function(df.trees, params, responsabilities){
   "This is wrong because a pi factor is missing (a priori probabilities)"
-  df.trees <- filter(df.trees, t>1)
   alphas <- params$alphas
   betas <- params$betas
   taus <- params$taus

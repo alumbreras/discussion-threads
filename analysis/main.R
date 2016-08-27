@@ -5,8 +5,14 @@
 # Compares Gomez 2013 and Lumbreras 2016 on a reddit forum
 # author: Alberto Lumbreras
 ###########################################################
-# Load dataframe representation of trees
-#subforum <- 'podemos'
+source('R/datasets.R')
+source('R/estimators.R')
+source('R/extract_from_db.R')
+source('R/likelihood.R')
+source('R/plot_structural_properties.R')
+source('R/plotting.R')
+source('R/thread_generators.R')
+source('R/link_prediction.R')
 
 ################################################################################
 ################################################################################
