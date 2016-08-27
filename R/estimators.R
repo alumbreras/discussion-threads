@@ -2,13 +2,17 @@ library(dfoptim)
 library(parallel)
 library(foreach)
 library(doParallel)
-
-estimation_Gomez2013 <- function(df.trees, params=c(0.5,0.5,0.5)){
+#'
+#'
+#' @param df.tree dataframe or table with t, popularity (parent degree) and lag
+estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=0.5)){
+  
   Qopt <- function(params, df.trees){
-    sum(apply(df.trees[-2], 1, function(i) likelihood_post(i, params[1], params[2], params[3])))
+    params <- list(alpha = params[1], beta=params[2], tau=params[3])
+    sum(apply(df.trees, 1, function(i) likelihood_post(i, params)))
   }
 
-  sol <- nmkb(params, Qopt,
+  sol <- nmkb(unlist(params), Qopt,
               lower = c(0,0,0), upper = c(Inf, Inf, 1),
               control = list(maximize=TRUE),
               df.trees = df.trees)
