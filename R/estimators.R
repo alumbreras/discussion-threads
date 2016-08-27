@@ -2,10 +2,11 @@ library(dfoptim)
 library(parallel)
 library(foreach)
 library(doParallel)
+
 #'
 #'
 #' @param df.tree dataframe or table with t, popularity (parent degree) and lag
-estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=0.5)){
+estimation_Gomez2013_deprecated <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=0.5)){
   
   Qopt <- function(params, df.trees){
     params <- list(alpha = params[1], beta=params[2], tau=params[3])
@@ -19,6 +20,30 @@ estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=
   sol$par
 }
 
+estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=0.5)){
+  
+  # Remove t=1 to avoid strange things like NA
+  # stop if some user is lost in the process
+  # (users that only have replies to root)
+  users.before <- length(unique(df.trees$userint))
+  df.trees <- df.trees %>% filter(t>1)
+  users.after <- length(unique(df.trees$userint))
+  if(users.before != users.after) warning("Remove users that only reply to root")
+
+  Qopt <- function(params, df.trees){
+    params <- list(alpha = params[1], beta=params[2], tau=params[3])
+    likelihood_Gomez2013(df.trees, params)
+  }
+  
+  sol <- nmkb(unlist(params), Qopt,
+              lower = c(0,0,0), upper = c(Inf, Inf, 1),
+              control = list(maximize=TRUE),
+              df.trees = df.trees)
+  sol$par
+}
+
+
+
 #' Expectation-Maximization algorithm to find clusters and
 #' parameters of each cluster
 #' @param df.trees dataframe of posts
@@ -30,20 +55,36 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
   stopifnot(all(params$betas > 0))
   stopifnot(all(params$taus > 0))
 
+  # Remove t=1 to avoid strange things like NA
+  # stop if some user is lost in the process
+  # (users that only have replies to root)
+  users.before <- length(unique(df.trees$userint))
+  df.trees <- df.trees %>% filter(t>1)
+  users.after <- length(unique(df.trees$userint))
+  if(users.before != users.after) warning("Remove users that only reply to root")
+  
+  
   # Set up cluster for parallelisation
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
   registerDoParallel(cl)
 
+  # Create internal user ids. They will correspond to their row
+  # in the matrix of responsabilities
+  # We will give their real ids back at the end
+  df.trees$id_ <- match(df.trees$userint, unique(df.trees$userint))
+  
   update_responsabilities <- function(df.trees, u, pis, alphas, betas, taus){
     # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
 
     K <- length(alphas) # number of clusters
-    Xu <- filter(df.trees, userint==u) # all posts from user
+    Xu <- filter(df.trees, id_==u) # all posts from user
 
     logfactors <- rep(0,K)
     for (k in 1:K){
-      logfactors[k] <- log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k]))
+      params.k <- list(alpha = alphas[k], beta = betas[k], tau = taus[k])
+      logfactors[k] <- log(pis[k]) + likelihood_Gomez2013(Xu, params.k)
+      #logfactors[k] <- log(pis[k]) + sum(apply(Xu, 1, likelihood_post, params.k))
     }
 
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
@@ -54,10 +95,10 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
 
 
   U <- max(df.trees$userint) # there will be unised rows (test set). That's ok.
-  userints <- sort(unique(df.trees$userint))
-  alphas <- params$alphas
-  betas <- params$betas
-  taus <- params$taus
+  userids <- sort(unique(df.trees$id_))
+  alphas <- params$alpha
+  betas <- params$beta
+  taus <- params$tau
 
   K <- length(alphas)
 
@@ -70,15 +111,21 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
   
   traces <- matrix(0, nrow=niters, ncol=K)
   likes <- rep(NA, niters)
+  like.last <- -Inf
+  iter <- 1
   for(iter in 1:niters){
     cat("\n**********ITERATION**********: ", iter, "\n")
     # EXPECTATION
     # Given the parameters of each cluster, find the responsability of each user in each cluster
     #################################################################
     cat("\nExpectation...")
-    responsabilities <- foreach(u=userints, .packages=c('dplyr'), .export=c('likelihood_post'), .combine=rbind) %dopar%
-                            update_responsabilities(df.trees, u, pis, alphas, betas, taus)
-
+    responsabilities <- foreach(u=userids, .packages=c('dplyr'), 
+                                .export=c('likelihood_Gomez2013'), 
+                                .combine=rbind) %dopar% 
+                        {
+                          update_responsabilities(df.trees, u, pis, alphas, betas, taus)
+                        }
+    
     cat("\nCluster distribution:\n", colSums(responsabilities))
 
     # MAXIMIZATION
@@ -91,8 +138,10 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
-    sols <- foreach(k=1:K, .packages=c('dfoptim'), .export=c('likelihood_post', 'Qopt')) %dopar% {
-      nmkb(c(alphas[k], betas[k], taus[k]), Qopt, 
+    sols <- foreach(k=1:K, .packages=c('dfoptim'), 
+                    .export=c('likelihood_post', 'likelihood_Gomez2013_all',
+                              'Qopt_opt')) %dopar% {
+      nmkb(c(alphas[k], betas[k], taus[k]), Qopt_opt, 
            lower = c(0,0,0), upper = c(Inf, Inf, 1), 
            control = list(maximize=TRUE),
            df.trees = df.trees, responsabilities = responsabilities, pis = pis, k=k)
@@ -105,9 +154,9 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
       taus[k]   <-  sol$par[3]
       traces[iter,k] <- sol$value
     }
-    params$alphas <- alphas
-    params$betas <- betas
-    params$taus <- taus
+    params$alpha <- alphas
+    params$beta <- betas
+    params$tau <- taus
 
 
     ###############################################################
@@ -121,6 +170,13 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     cat("\ntaus: ", taus)
     cat("\n likelihood: ", like)
     cat("\n***")
+    
+    if(like == like.last){
+      cat('\n\nConverged!')
+      break
+    }else{
+      like.last <- like
+    } 
 
     # Update pis
     pis <- colSums(responsabilities)/nrow(responsabilities)
@@ -135,7 +191,7 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
        pis = pis,
        traces=traces,
        likes=like,
-       users=users)
+       users=unique(df.trees$userint)) # users[1] is the one with id_ = 1 and so on
 
 }
 

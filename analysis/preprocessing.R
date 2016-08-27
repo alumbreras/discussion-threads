@@ -19,8 +19,6 @@ if(detectCores() > 20)
   ncores <- 6 # local computer
 }  
 
-cl = makeCluster(ncores, outfile="",  port=11439)
-registerDoParallel(cl)
 
 ########################
 
@@ -67,10 +65,17 @@ for(subforum in subforums){
   df.posts <- df.posts %>% filter(thread.size>1)
   
   threads <- unique(df.posts$thread)#[1:10]
+  nthreads <- length(threads)
+  
+  cl = makeCluster(ncores, outfile="",  port=11439)
+  registerDoParallel(cl)
+  
   cat('\nprocessing trees')
-  df.trees.list <- foreach(th = threads,
+  df.trees.list <- foreach(i = 1:length(threads),
                  .inorder = FALSE,
                  .packages = c('dplyr', 'igraph')) %dopar% {
+    cat('\n', subforum, ':', i, ' / ', nthreads)
+    th <- threads[i]
     df.thread <- df.posts %>% filter(thread==th)
     df.edges <- df.thread %>% filter(!is.na(parent.user)) %>% select(postid, parent)
     df.vertices <- df.thread %>% select(postid, user, date)
@@ -79,6 +84,7 @@ for(subforum in subforums){
     }
   df.trees <- rbindlist(df.trees.list)
   
+  stopCluster(cl)
 
   # Add extra information about the user and subforum
   df.trees <- df.posts %>% rename(parentid = parent) %>% left_join(df.trees, .)
@@ -86,7 +92,6 @@ for(subforum in subforums){
   
   data.list[[ length(data.list) + 1 ]] <- df.trees
 }
-stopCluster(cl)
 
 df.trees <- rbindlist(data.list)
 
