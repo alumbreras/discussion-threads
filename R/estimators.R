@@ -22,6 +22,7 @@ estimation_Gomez2013_deprecated <- function(df.trees, params=list(alpha=0.5, bet
 
 estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=0.5)){
   
+  df.trees <- df.trees %>% select(t, popularity, parent, lag)
   # Remove t=1 to avoid strange things like NA
   # stop if some user is lost in the process
   # (users that only have replies to root)
@@ -58,23 +59,20 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
   # Remove t=1 to avoid strange things like NA
   # stop if some user is lost in the process
   # (users that only have replies to root)
-  users.before <- length(unique(df.trees$userint))
+  users.before <- length(unique(df.trees$user))
   df.trees <- df.trees %>% filter(t>1)
-  users.after <- length(unique(df.trees$userint))
+  users.after <- length(unique(df.trees$user))
   if(users.before != users.after) warning("Remove users that only reply to root")
-  
-  
+
+    
   # Set up cluster for parallelisation
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
   registerDoParallel(cl)
 
-  # Create internal user ids. They will correspond to their row
-  # in the matrix of responsabilities
-  # We will give their real ids back at the end
-  df.trees$id_ <- match(df.trees$userint, unique(df.trees$userint))
+
   
-  update_responsabilities <- function(df.trees, u, pis, alphas, betas, taus){
+  update_responsibilities <- function(df.trees, u, pis, alphas, betas, taus){
     # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
 
     K <- length(alphas) # number of clusters
@@ -88,13 +86,18 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     }
 
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
-    responsabilities_u <- exp(logfactors)/sum(exp(logfactors))
-    responsabilities_u
+    responsibilities_u <- exp(logfactors)/sum(exp(logfactors))
+    responsibilities_u
   }
 
-
-
-  U <- max(df.trees$userint) # there will be unised rows (test set). That's ok.
+  # Create internal user ids. They will correspond to their row
+  # in the matrix of responsibilities
+  # We will give their real ids back at the end
+  user.realids <- unique(df.trees$user)
+  df.trees$id_ <- match(df.trees$user, unique(df.trees$user))
+  df.trees <- df.trees %>% select(id_, t, popularity, parent, lag)
+  
+  U <- length(unique(df.trees$id_))
   userids <- sort(unique(df.trees$id_))
   alphas <- params$alpha
   betas <- params$beta
@@ -102,13 +105,9 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
 
   K <- length(alphas)
 
-  responsabilities <- matrix(1/K, nrow = U, ncol = K)
-  pis <- rep(1/ncol(responsabilities), ncol(responsabilities))
+  responsibilities <- matrix(1/K, nrow = U, ncol = K)
+  pis <- rep(1/ncol(responsibilities), ncol(responsibilities))
 
-  # add user names
-  #userints <- df.trees$userint
-  #
-  
   traces <- matrix(0, nrow=niters, ncol=K)
   likes <- rep(NA, niters)
   like.last <- -Inf
@@ -119,17 +118,17 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # Given the parameters of each cluster, find the responsability of each user in each cluster
     #################################################################
     cat("\nExpectation...")
-    responsabilities <- foreach(u=userids, .packages=c('dplyr'), 
+    responsibilities <- foreach(u=userids, .packages=c('dplyr'), 
                                 .export=c('likelihood_Gomez2013'), 
                                 .combine=rbind) %dopar% 
                         {
-                          update_responsabilities(df.trees, u, pis, alphas, betas, taus)
+                          update_responsibilities(df.trees, u, pis, alphas, betas, taus)
                         }
     
-    cat("\nCluster distribution:\n", colSums(responsabilities))
+    cat("\nCluster distribution:\n", colSums(responsibilities))
 
     # MAXIMIZATION
-    # Given the current responsabilities and pis, find the best parameters for each cluster
+    # Given the current responsibilities and pis, find the best parameters for each cluster
     ################################################################
     cat("\nMaximization...")
     # Parallel optimization for cluster k=1,...,K
@@ -144,7 +143,7 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
       nmkb(c(alphas[k], betas[k], taus[k]), Qopt_opt, 
            lower = c(0,0,0), upper = c(Inf, Inf, 1), 
            control = list(maximize=TRUE),
-           df.trees = df.trees, responsabilities = responsabilities, pis = pis, k=k)
+           df.trees = df.trees, responsibilities = responsibilities, pis = pis, k=k)
     }
             
     for(k in 1:K){
@@ -163,7 +162,7 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     # EVALUATION OF FULL LIKELIHOOD p(X, Z | \theta)
     # this should be monotonically increasing
     ###############################################################
-    like <- likelihood_Lumbreras2016(df.trees, params, responsabilities, pis)
+    like <- likelihood_Lumbreras2016(df.trees, params, responsibilities, pis)
     likes[iter] <- c(t(pis) %*% traces[iter,])
     cat("\n\nalphas: ", alphas)
     cat("\nbetas: ", betas)
@@ -179,20 +178,21 @@ estimation_Lumbreras2016 <- function(df.trees, params, niters=10){
     } 
 
     # Update pis
-    pis <- colSums(responsabilities)/nrow(responsabilities)
+    pis <- colSums(responsibilities)/nrow(responsibilities)
   }
 
   stopCluster(cl)
-
+  
+  # real user ids into the responsability matrix
+  rownames(responsibilities) <- user.realids
+  
   list(alphas=alphas,
        betas=betas,
        taus=taus,
-       responsabilities=responsabilities,
+       responsibilities=responsibilities,
        pis = pis,
        traces=traces,
-       likes=like,
-       users=unique(df.trees$userint)) # users[1] is the one with id_ = 1 and so on
-
+       likes=like)
 }
 
 

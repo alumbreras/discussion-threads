@@ -14,8 +14,9 @@ source('R/plotting.R')
 source('R/thread_generators.R')
 source('R/link_prediction.R')
 
+################################################################################
 # Prepare the data
-#######################################
+################################################################################
 df.trees <- readRDS("data/df.trees.rds")
 df.trees <- df.trees %>% filter(user.rank <= 1000)
 df.trees <- df.trees %>% filter(t>1) # t==1 is trivial, is always a reply to the root
@@ -30,38 +31,49 @@ df.trees <- df.trees %>%
 
 # We'll identify each user by its rank
 df.trees <- df.trees %>% mutate(userint = user.rank)
-df.trees.train <- df.trees %>% filter(split == 'train') %>% select(userint, t, popularity, parent, lag)
-df.trees.test <- df.trees %>% filter(split == 'test') %>% select(userint, t, popularity, parent, lag)
+df.trees.train <- df.trees %>% filter(split == 'train') %>% select(user, t, popularity, parent, lag)
+df.trees.test <- df.trees %>% filter(split == 'test') %>% select(user, t, popularity, parent, lag)
 
 # Remove the non-numeric rows to avoid issues when using apply
 # over rows
 
-# Estimate 
-#####################################
-# Estimate parameters for Gomez 2013
+################################################################################
+# Estimate parameters
+################################################################################
+
+# GOMEZ
+################################################################################
 params <- list(alpha = runif(1),
                     beta = runif(1),
                     tau = runif(1))
 params.gomez <- estimation_Gomez2013(head(df.trees.train,10000), params)
 
-
-# Estimate parameters for Lumbreras for k=2,..,10
+# LUMBRERAS (k=1,...N)
+################################################################################
 params.lumbreras.list <- list()
 for (k in 1:5){
   alphas <- runif(k)*2
   betas <- runif(k)*2 #*100
   taus <- runif(k)
   params <- list(alpha=alphas, beta=betas, tau=taus)
-  #params.lumbreras.list[[k]] <- estimation_Lumbreras2016(head(df.trees.train,1000), params)
-  params.lumbreras.list[[k]] <- estimation_Lumbreras2016(df.trees.train, params)
+  res <- estimation_Lumbreras2016(df.trees.train, params, niters=3)
+  params.lumbreras.list[[k]] <- res
+}
+if(FALSE){
+  save(params.lumbreras.list, file='data/all.params.lumbreras.list.rda')
 }
 
+# Choose number of clusters (in validation set)
+##################################################
 # Select number of clusters in validation set (estimation of predictive power)
 likelihoods.lumbreras.k <- vector()
 df.trees.test <- filter(df.trees.test, !is.na(userint))
 for(k in 1:5){
   params.lumbreras <-  params.lumbreras.list[[k]]
-  likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.test, params.lumbreras, params.lumbreras$responsabilities, params.lumbreras$pis)
+  likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.test, 
+                                                         params.lumbreras, 
+                                                         params.lumbreras$responsabilities, 
+                                                         params.lumbreras$pis)
 }
 plot(likelihoods.lumbreras.k)
 
@@ -112,12 +124,15 @@ if(FALSE){
   load(paste0('data/trees.lumbreras.',subforum, '.rda'))
 }
 
+################################################################################
 # Compare genetared threads (plot degree distributions, etc)
+################################################################################
 compare_trees(trees, trees.lumbreras, trees.gomez)
 
 
-# Compare how good are both models to make posts recommendations
-# (if we recommend the most likely parent)
+################################################################################
+# Compare post recommendations
+################################################################################
 cl <- makeCluster(detectCores()-2)
 clusterExport(cl, c("compare_link_prediction", "params.lumbreras", "params.gomez"))
 clusterEvalQ(cl, {library(igraph)})
