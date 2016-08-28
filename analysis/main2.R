@@ -13,13 +13,15 @@ source('R/plot_structural_properties.R')
 source('R/plotting.R')
 source('R/thread_generators.R')
 source('R/link_prediction.R')
+deleted <- c('AutoModerator', '[deleted]')
 
 ################################################################################
 # Prepare the data
 ################################################################################
 df.trees <- readRDS("data/df.trees.rds")
-df.trees <- df.trees %>% filter(user.rank <= 1000)
+df.trees <- df.trees %>% filter(user.rank <= 1000, user.posts > 100)
 df.trees <- df.trees %>% filter(t>1) # t==1 is trivial, is always a reply to the root
+df.trees <- df.trees %>% filter(! user %in% deleted) # remove deleted and bots
 
 # mark as training,  validation and test 60/20/20
 # or mark fold 1, fold 2...
@@ -33,6 +35,16 @@ df.trees <- df.trees %>%
 df.trees <- df.trees %>% mutate(userint = user.rank)
 df.trees.train <- df.trees %>% filter(split == 'train') %>% select(user, t, popularity, parent, lag)
 df.trees.test <- df.trees %>% filter(split == 'test') %>% select(user, t, popularity, parent, lag)
+
+# Show posts in TRAIN and TEST for each user
+df.users <- df.trees %>% 
+  group_by(user) %>% 
+     summarise(ntrain = sum(split=='train'), 
+               ntest = sum(split=='test'), 
+               total=n()) %>% 
+  arrange(desc(total), desc(ntrain), desc(ntest)) %>%
+  as.data.frame
+
 
 # Remove the non-numeric rows to avoid issues when using apply
 # over rows
@@ -67,13 +79,12 @@ if(FALSE){
 ##################################################
 # Select number of clusters in validation set (estimation of predictive power)
 likelihoods.lumbreras.k <- vector()
-df.trees.test <- filter(df.trees.test, !is.na(userint))
 for(k in 1:5){
-  params.lumbreras <-  params.lumbreras.list[[k]]
+  params <-  params.lumbreras.list[[k]]
   likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.test, 
-                                                         params.lumbreras, 
-                                                         params.lumbreras$responsabilities, 
-                                                         params.lumbreras$pis)
+                                                         params, 
+                                                         params$responsibilities, 
+                                                         params$pis)
 }
 plot(likelihoods.lumbreras.k)
 

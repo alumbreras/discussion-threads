@@ -106,33 +106,43 @@ Qopt.par <- function(params, df.trees, responsibilities, pis, k){
 
 
 #' Total likelihood of a dataframe according to Lumbreras2016
-#' @param df.trees data.frame with one post per row and features in columns
+#' @param data trees data.frame with one post per row and features in columns
 #' @param model parameters
 #' @param responsibilities responsibilities of users w.r.t clusters
 #' @return loglikelihood of the dataset
 #' @export
-likelihood_Lumbreras2016 <- function(df.trees, params, responsibilities, pis){
-  #df.trees <- filter(!is.na(id_))
+likelihood_Lumbreras2016 <- function(data, params, responsibilities, pis){
+
   alphas <- params$alpha
   betas <- params$beta
   taus <- params$tau
   like <- 0
   K <- length(alphas)
 
+  # The internal id of a user is its row in the matrix of responsibilities
+  user.realids <- unique(data$user)
+  data$id_ <- match(data$user, rownames(responsibilities))
+  data <- data %>% select(id_, t, popularity, parent, lag)
+  
+  # Check all users have a responsability entry
+  
+  
   # Q (see Bishop Eq. 9.40, p.443)
-  Q <- 0
-  U <- length(unique(df.trees$id_))
-
 
   # The next loop does the same than this one but in a vectorized way
+  # Q <- 0
+  # U <- length(unique(data$id_))
   #for(u in 1:U){
   #  Xu <- filter(df.trees, userint==u) # all posts from user
   #  for(k in 1:K){
   #    Q <- Q + responsibilities[u,k]*(log(pis[k]) + sum(apply(Xu[-2], 1, likelihood_post, alphas[k], betas[k], taus[k])))
   #  }
   #}
+  
+  Q <- 0
   for(k in 1:K){
-    Q <- Q + Qopt_opt(c(alphas[k], betas[k], taus[k]), df.trees, responsibilities, pis, k)
+    Q <- Q + Qopt_opt(c(alphas[k], betas[k], taus[k]), data, responsibilities, pis, k)
+    cat("Q, k, ", Q, k)
   }
 
   # Entropy of the posterior
