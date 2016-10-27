@@ -57,7 +57,7 @@ for(subforum in subforums){
   
   # Add user info to posts
   df.posts <- df.posts %>% left_join(df.users)
-
+  
   # Create trees and then the final dataframes for each tree
   df.posts <- filter(df.posts, thread %in% unique(df.posts$thread))
   
@@ -72,22 +72,26 @@ for(subforum in subforums){
   
   cat('\nprocessing trees')
   df.trees.list <- foreach(i = 1:length(threads),
-                 .inorder = FALSE,
-                 .packages = c('dplyr', 'igraph')) %dopar% {
-    cat('\n', subforum, ':', i, ' / ', nthreads)
-    th <- threads[i]
-    df.thread <- df.posts %>% filter(thread==th)
-    df.edges <- df.thread %>% filter(!is.na(parent.user)) %>% select(postid, parent)
-    df.vertices <- df.thread %>% select(postid, user, date)
-    gtree <- graph.data.frame(df.edges, vertices = df.vertices)
-    tree_to_data(gtree, thread=th)
-    }
+                           .inorder = FALSE,
+                           .packages = c('dplyr', 'igraph')) %dopar% {
+     cat('\n', subforum, ':', i, ' / ', nthreads)
+     th <- threads[i]
+     df.thread <- df.posts %>% filter(thread==th)
+     df.edges <- df.thread %>% filter(!is.na(parent.user)) %>% select(postid, parent)
+     df.vertices <- df.thread %>% select(postid, user, date)
+     gtree <- graph.data.frame(df.edges, vertices = df.vertices)
+     tree_to_data(gtree, thread=th)
+                           }
   df.trees <- rbindlist(df.trees.list)
   
   stopCluster(cl)
-
-  # Add extra information about the user and subforum
-  df.trees <- df.posts %>% rename(parentid = parent) %>% left_join(df.trees, .)
+  
+  
+  # Add extra information to the post (about the user and subforum)
+  # df.trees <- df.posts %>% rename(parentid = parent) %>% left_join(as.tbl(df.trees), .)
+  
+  df.posts <- df.posts %>% rename(parentid = parent)
+  df.trees <- merge(df.trees, df.posts, by=c('postid', 'thread', 'user'), all.x=TRUE)
   df.trees <- df.trees %>% mutate(subforum=subforum)
   
   data.list[[ length(data.list) + 1 ]] <- df.trees
