@@ -9,6 +9,8 @@ results.md
 # Large files such as database, or big R objects
 data/
 
+!data/df.trees.rds #Exception
+
 # Work in progress
 # manuscript/
 
