@@ -13,7 +13,11 @@ estimation_Gomez2013_deprecated <- function(df.trees, params=list(alpha=0.5, bet
     sum(apply(df.trees, 1, function(i) likelihood_post(i, params)))
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -35,7 +39,11 @@ estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=
   users.after <- length(unique(df.trees$user))
   if(users.before != users.after) warning("Remove users that only reply to root")
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -99,15 +107,21 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
   stopifnot(all(params$betas > 0))
   stopifnot(all(params$taus > 0))
 <<<<<<< HEAD
+<<<<<<< HEAD
   
   # Copy of the original data with modifications
   data_ <- data
   
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
   # Copy of the original data with modifications
   data_ <- data
     
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Remove t=1 to avoid strange things like NA
   # stop if some user is lost in the process
@@ -117,8 +131,13 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
   users.after <- length(unique(data$user))
   if(users.before != users.after) warning("Remove users that only reply to root")
 <<<<<<< HEAD
+<<<<<<< HEAD
   
   
+=======
+
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
     
@@ -127,6 +146,7 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
   registerDoParallel(cl)
+<<<<<<< HEAD
 <<<<<<< HEAD
   
   
@@ -138,6 +158,8 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
     Xu <- filter(data, id_==u) # all posts from user
     
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 
   # Internal function to update responsibilities of users
@@ -147,6 +169,9 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
     K <- length(alphas) # number of clusters
     Xu <- filter(data, id_==u) # all posts from user
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     logfactors <- rep(0,K)
     for (k in 1:K){
@@ -154,6 +179,7 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
       logfactors[k] <- log(pis[k]) + likelihood_Gomez2013(Xu, params.k)
       #logfactors[k] <- log(pis[k]) + sum(apply(Xu, 1, likelihood_post, params.k))
     }
+<<<<<<< HEAD
     
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
     responsibilities_u <- exp(logfactors)/sum(exp(logfactors))
@@ -335,12 +361,19 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
       #logfactors[k] <- log(pis[k]) + sum(apply(Xu, 1, likelihood_post, params.k))
     }
     
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     logfactors <- logfactors - max(logfactors) # avoid numerical underflow
     responsibilities_u <- exp(logfactors)/sum(exp(logfactors))
     responsibilities_u
   }
+<<<<<<< HEAD
   
 =======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
+
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Create internal user ids. They will correspond to their row
   # in the matrix of responsibilities
@@ -348,7 +381,11 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
   user.realids <- unique(data$user)
   data$id_ <- match(data$user, unique(data$user))
 <<<<<<< HEAD
+<<<<<<< HEAD
   data <- data %>% select(id_, t, popularity, parent, lag, grandparent, grandparents.candidates)
+=======
+  data <- data %>% select(id_, t, popularity, parent, lag)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   data <- data %>% select(id_, t, popularity, parent, lag)
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -358,6 +395,7 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
   alphas <- params$alpha
   betas <- params$beta
   taus <- params$tau
+<<<<<<< HEAD
 <<<<<<< HEAD
   gammas <- params$gamma
   
@@ -371,6 +409,8 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
   like.last <- -Inf
   iter <- 1
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
   K <- length(alphas)
 
@@ -383,6 +423,9 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
   like.last <- -Inf
   iter <- 1
   
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   for(iter in 1:niters){
     
@@ -397,6 +440,7 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
                                 .export=c('likelihood_Gomez2013'), 
                                 .combine=rbind) %dopar% 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 {
                                   update_responsibilities(data, u, pis, alphas, betas, taus, gammas)
                                 }
@@ -404,12 +448,17 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
     cat("\nCluster distribution:\n", colSums(responsibilities))
     
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                         {
                           update_responsibilities(data, u, pis, alphas, betas, taus)
                         }
     
     cat("\nCluster distribution (1:5):\n", head(colSums(responsibilities)),5)
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     # MAXIMIZATION
     # Given the current responsibilities and pis, find the best parameters for each cluster
@@ -422,7 +471,10 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     # TODO: we might try starting from somewhere else in the parameter space
     # just in case. And discard worse solutions.
     sols <- foreach(k=1:K, .packages=c('dfoptim'), 
@@ -598,6 +650,9 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     sols <- foreach(k=1:K, .packages=c('dfoptim'), 
                     .export=c('likelihood_post_plus', 'likelihood_Gomez2013_all_plus',

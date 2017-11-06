@@ -2,6 +2,7 @@ this.dir <- dirname(parent.frame(2)$ofile)
 setwd(this.dir)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 library(ggplot2)
 library(tidyr)
 library(dplyr)
@@ -24,6 +25,12 @@ source('R/plotting.R')
 
 # Some global options
 =======
+=======
+source('R/datasets.R')
+source('R/estimators.R')
+source('R/extract_from_db.R')
+source('R/likelihood.R')
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 source('R/plotting.R')
 source('R/thread_generators.R')
 
@@ -33,6 +40,9 @@ library(dplyr)
 library(doParallel)
 library(foreach)
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 theme_horizontal <- theme_bw() + 
   theme(strip.background = element_rect(fill = 'white'), 
@@ -40,6 +50,10 @@ theme_horizontal <- theme_bw() +
         aspect.ratio=1)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -48,6 +62,10 @@ theme_vertical <- theme_bw() +
         legend.position = "none")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad

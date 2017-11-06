@@ -21,9 +21,13 @@ likelihood_post <- function(row, params){
   
   c(as.matrix(log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) -
 <<<<<<< HEAD
+<<<<<<< HEAD
      #log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
      log(2*alpha*(row['t']-1)   + beta + tau*(tau^row['t']-1)/(tau-1))))
   # FIXED March 2017: it is -1, not -1/2
+=======
+     log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
      log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -41,9 +45,13 @@ likelihood_post_plus <- function(row, params){
   
   c(as.matrix(log(alpha * row['popularity'] + beta*(row['parent']==1) + gamma*(row['granparent']) + tau^row['lag']) -
 <<<<<<< HEAD
+<<<<<<< HEAD
                 #log(2*alpha*(row['t']-1/2)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
                 log(2*alpha*(row['t']-1)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
 
+=======
+                log(2*alpha*(row['t']-1/2)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
                 log(2*alpha*(row['t']-1/2)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -61,6 +69,7 @@ likelihood_post_plus <- function(row, params){
 #' @export
 likelihood_Gomez2013_deprecated <- function(data, params){
   sum(apply(data, 1, function(x) likelihood_post(x, params)))
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -112,6 +121,8 @@ likelihood_Gomez2013_all_plus <- function(data, params){
 }
 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 }
 
 # x100 times faster (for large dataframes)
@@ -153,6 +164,9 @@ likelihood_Gomez2013_all_plus <- function(data, params){
     log(2*alpha*(data['t']-1/2)   + beta + gamma*data['grandparents.candidates'] + tau*(tau^data['t']-1)/(tau-1))
 }
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 #' The part of the lower bound that we optimize in the M-step

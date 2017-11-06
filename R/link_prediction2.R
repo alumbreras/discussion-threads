@@ -27,7 +27,11 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
     # skip if the post is not marked for training
     #if(df.tree$split[t] != 'test') next
 <<<<<<< HEAD
+<<<<<<< HEAD
     
+=======
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -68,6 +72,7 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
     ############################
     if(TRUE){
 <<<<<<< HEAD
+<<<<<<< HEAD
       #k <- z[V(tree)$userint[t+1]] # Attention to the t+1!
       k <- z[t]
       if (is.na(k)){
@@ -83,6 +88,8 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
       like.lumbreras <- log(probs.lumbreras[chosen]) - log(sum(probs.lumbreras))
       ranking.lumbreras <- rank(-probs.lumbreras)[chosen] 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
         #k <- z[V(tree)$userint[t+1]] # Attention to the t+1!
         k <- z[t]
         if (is.na(k)){
@@ -97,6 +104,9 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
         predicted.lumbreras <- which.max(probs.lumbreras)
         like.lumbreras <- log(probs.lumbreras[chosen]) - log(sum(probs.lumbreras))
         ranking.lumbreras <- rank(-probs.lumbreras)[chosen] 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     }
     if(FALSE){
@@ -145,6 +155,7 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
     
     df.preds <- rbindlist(list(df.preds,
 <<<<<<< HEAD
+<<<<<<< HEAD
                                data.frame(predicted.lumbreras = predicted.lumbreras,
                                           like.lumbreras = like.lumbreras,
                                           ranking.lumbreras =  ranking.lumbreras,
@@ -171,6 +182,8 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
                                           split = df.tree$split[t],
                                           subforum = subforum)))
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                           data.frame(predicted.lumbreras = predicted.lumbreras,
                                      like.lumbreras = like.lumbreras,
                                      ranking.lumbreras =  ranking.lumbreras,
@@ -196,6 +209,9 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
                                      z = df.tree$z[t],
                                      split = df.tree$split[t],
                                      subforum = subforum)))
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
   }
@@ -213,9 +229,13 @@ plot_ranking_benchmarks2 <- function(df.preds){
   #df.preds$subforum <- as.character(df.preds$subforum)
   
 <<<<<<< HEAD
+<<<<<<< HEAD
   ##############################################################################
   # LIKELIHOOODS BY GROUP
   ##############################################################################
+=======
+  ### LIKELIHOOODS
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   ### LIKELIHOOODS
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -231,7 +251,11 @@ plot_ranking_benchmarks2 <- function(df.preds){
     filter(split == 'test') %>%
     gather(key = 'model', value = 'like', 
 <<<<<<< HEAD
+<<<<<<< HEAD
            -subforum, -split, -z, -sample) 
+=======
+     -subforum, -split, -z, -sample) 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
      -subforum, -split, -z, -sample) 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -250,6 +274,7 @@ plot_ranking_benchmarks2 <- function(df.preds){
           legend.key = element_blank()) +
     #guides(fill = guide_legend(override.aes = list(size=0.5)))+
 <<<<<<< HEAD
+<<<<<<< HEAD
    # guides(colour = "none",
   #         linetype = guide_legend(override.aes = list(linetype = 0))) +
     xlab('cluster') + ylab("negative loglikelihood")
@@ -259,6 +284,8 @@ plot_ranking_benchmarks2 <- function(df.preds){
 
    # HITS
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     # guides(colour = "none",
     #         linetype = guide_legend(override.aes = list(linetype = 0))) +
     xlab('cluster') + ylab("negative loglikelihood")
@@ -269,6 +296,9 @@ plot_ranking_benchmarks2 <- function(df.preds){
   
   
   # HITS
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   df.hits <- df.preds %>% group_by(split, subforum, z) %>% 
     summarise(lumbreras = sum(predicted.lumbreras==chosen)/n(),
@@ -285,7 +315,11 @@ plot_ranking_benchmarks2 <- function(df.preds){
   
   g.hits <- ggplot(df.hits, aes(x=as.factor(z), y=hit, group=model, fill=model)) +
 <<<<<<< HEAD
+<<<<<<< HEAD
     geom_bar(stat='identity', colour = 'black', position= 'dodge') +
+=======
+    geom_bar(stat='identity', colour = 'black', position= 'dodge', width=.50) +
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
     geom_bar(stat='identity', colour = 'black', position= 'dodge', width=.50) +
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -303,21 +337,33 @@ plot_ranking_benchmarks2 <- function(df.preds){
     xlab('cluster') + ylab("hits")
   print(g.hits)
 <<<<<<< HEAD
+<<<<<<< HEAD
   ggsave(file=paste0('snam_linkprediction_hits_', subforum_, '_k', k, '.eps'), 
          width=210, height=75, units='mm')
 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   ggsave(file=paste0('ch4_linkprediction_hits_', subforum_, '_k15.eps'), 
          width=210, height=75, units='mm')
   save(g2, file = "gplot_podemos_k5_linkprediction_hits.rda")
   
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Add baseline predictions
   df.preds <- mutate(df.preds, like.baseline=log(1/tree.size))
   df.preds <- mutate(df.preds, predicted.baseline=1)
   
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+  # Seconds to minutes
+  df.preds <- mutate(df.preds, mins.to.root = floor(time.to.root/60))
+  df.preds <- mutate(df.preds, hours.to.root = floor(time.to.root/(3600)))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   # Seconds to minutes
   df.preds <- mutate(df.preds, mins.to.root = floor(time.to.root/60))
@@ -329,7 +375,11 @@ plot_ranking_benchmarks2 <- function(df.preds){
   # RANKING BY SIZE
   ##############################################################################
 <<<<<<< HEAD
+<<<<<<< HEAD
   df.rankings <- df.preds %>% filter(split == 'test') %>%
+=======
+  df.rankings <- df.preds %>% filter(split == 'train') %>%
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   df.rankings <- df.preds %>% filter(split == 'train') %>%
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -342,6 +392,10 @@ plot_ranking_benchmarks2 <- function(df.preds){
            tau = ranking.tau, 
            gomez = ranking.gomez, 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+           #gomez.plus = ranking.gomezplus, 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
            #gomez.plus = ranking.gomezplus, 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -352,6 +406,7 @@ plot_ranking_benchmarks2 <- function(df.preds){
     mutate(ranking.error.abs = rank-1,
            ranking.error = (rank-1)/(size-1))
   
+<<<<<<< HEAD
 <<<<<<< HEAD
   df.rankings$model <- factor(df.rankings$model, levels = c('barabasi', 'tau', 'gomez', 'lumbreras'))
   
@@ -460,6 +515,8 @@ plot_ranking_benchmarks2 <- function(df.preds){
   
   
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   df.rankings$model <- factor(df.rankings$model, levels = c('barabasi', 'tau', 'gomez', 'lumbreras'))
   
@@ -586,6 +643,9 @@ plot_ranking_benchmarks2 <- function(df.preds){
         
         
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # RANK BY CHOSEN
   #############################################################################
@@ -596,15 +656,21 @@ plot_ranking_benchmarks2 <- function(df.preds){
   # tau is worse for long threads. Its just better when the choice is the
   # last post, of course. But this does not happen too often.
 <<<<<<< HEAD
+<<<<<<< HEAD
   
   # memory consuming
   g <- ggplot(filter(df.rankings, size<10), aes(x=chosen, y=ranking.error, group=model, 
                                                 color=model, shape=model, linetype=model)) +
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
         
   # memory consuming
   g <- ggplot(filter(df.rankings, size<10), aes(x=chosen, y=ranking.error, group=model, 
                                color=model, shape=model, linetype=model)) +
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     stat_smooth(method='loess', geom='point')+
     #stat_summary(fun.y= mean, aes(group=model), geom='point', alpha=1, size=1.5) +
@@ -620,11 +686,14 @@ plot_ranking_benchmarks2 <- function(df.preds){
            linetype = guide_legend(override.aes = list(linetype = 0)))
   print(g)
 <<<<<<< HEAD
+<<<<<<< HEAD
   ggsave(file=paste0('snam_linkprediction_rank_by_chosen.png'), 
          width=200, height=70, units='mm')        
   
   }
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   ggsave(file=paste0('ch4_linkprediction_rank_by_chosen.png'), 
          width=200, height=70, units='mm')        
         
@@ -645,6 +714,9 @@ plot_ranking_benchmarks2 <- function(df.preds){
     guides(colour = guide_legend(override.aes = list(size=2)),
            linetype = guide_legend(override.aes = list(linetype = 0)))
   print(g)
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 }
 

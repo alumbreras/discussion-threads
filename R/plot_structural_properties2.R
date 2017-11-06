@@ -36,7 +36,12 @@ compare_degrees <- function(df.data){
     g.lumbreras <- tree_from_parents_vector(df.tree$parent.lumbreras)
     g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+    g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
     g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
   
@@ -46,7 +51,12 @@ compare_degrees <- function(df.data){
     degrees.lumbreras = degree(g.lumbreras, mode='all')
     degrees.gomez = degree(g.gomez, mode='all')
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+    degrees.gomezplus = degree(g.gomezplus, mode='all')
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
     degrees.gomezplus = degree(g.gomezplus, mode='all')
     
@@ -56,6 +66,10 @@ compare_degrees <- function(df.data){
                lumbreras = degrees.lumbreras,
                gomez = degrees.gomez,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+               gomezplus = degrees.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
                gomezplus = degrees.gomezplus,
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -66,14 +80,20 @@ compare_degrees <- function(df.data){
   
   # Frequency by forum all with dplyr and withour table()
 <<<<<<< HEAD
+<<<<<<< HEAD
   df.degrees <- df.degrees %>% gather(model, degree, real, gomez, lumbreras)
   df.degrees.freqs <- df.degrees %>% group_by(subforum, model, degree) %>% summarise(freq = n()) %>%
     group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   df.degrees <- df.degrees %>% gather(model, degree, real, gomez, gomezplus, lumbreras)
   df.degrees.freqs <- df.degrees %>% group_by(subforum, model, degree) %>% summarise(freq = n()) %>%
     group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup %>%
     filter(model != 'gomezplus')
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   
@@ -82,13 +102,19 @@ compare_degrees <- function(df.data){
     geom_point(size=1.5) +
     scale_colour_manual(values=c('blue', 'red', 'black')) +
 <<<<<<< HEAD
+<<<<<<< HEAD
     scale_shape_manual(values=c(19, 19, 1)) +
     scale_alpha_manual(values=c(1,1,0.1))+
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
     scale_shape_manual(values=c(19, 19, 1)) +
     #scale_shape_manual(values=c(19, 19, 19, 1)) +
     #scale_alpha_manual(values=c(1,1,0.1, 19))+
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     #geom_line(stat='smooth', method= 'lm', alpha=0.5) +
     guides(colour = guide_legend(override.aes = list(size=2))) +
@@ -136,6 +162,10 @@ compare_subtrees <- function(df.data){
       g.real <- tree_from_parents_vector(df.tree$parent.real)
       g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+      g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
       g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -144,6 +174,10 @@ compare_subtrees <- function(df.data){
       subtrees.real <- ego_size(g.real, order=1000, mode='in', mindist=1)
       subtrees.gomez <- ego_size(g.gomez, order=1000, mode='in', mindist=1)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+      subtrees.gomezplus <- ego_size(g.gomezplus, order=1000, mode='in', mindist=1)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
       subtrees.gomezplus <- ego_size(g.gomezplus, order=1000, mode='in', mindist=1)
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -153,6 +187,10 @@ compare_subtrees <- function(df.data){
       data.frame(real = subtrees.real,
                  gomez = subtrees.gomez,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+                 gomezplus = subtrees.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
                  gomezplus = subtrees.gomezplus,
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -164,13 +202,19 @@ compare_subtrees <- function(df.data){
     
     # Frequency by forum all with dplyr and withour table()
 <<<<<<< HEAD
+<<<<<<< HEAD
     df.sizes.freqs <- df.sizes %>% group_by(subforum, model, size) %>% summarise(freq = n()) %>%
       group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     df.sizes <- df.sizes %>% gather(model, size, real, gomez, gomezplus, lumbreras)
     df.sizes.freqs <- df.sizes %>% group_by(subforum, model, size) %>% summarise(freq = n()) %>%
       group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup %>%
       filter(model != 'gomezplus')
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
     g <- ggplot(df.sizes.freqs, aes(x=size, y=prob, color=model, shape=model)) + 
@@ -179,7 +223,13 @@ compare_subtrees <- function(df.data){
       scale_colour_manual(values=c('blue', 'red', 'black')) +
       scale_shape_manual(values=c(19, 19, 1)) +
 <<<<<<< HEAD
+<<<<<<< HEAD
       scale_alpha_manual(values=c(1,1,0.1))+
+=======
+      #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
+      #scale_shape_manual(values=c(19, 19, 19, 1)) +
+      #scale_alpha_manual(values=c(1,1,0.1))+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
       #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
       #scale_shape_manual(values=c(19, 19, 19, 1)) +
@@ -227,12 +277,15 @@ compare_size_depth <- function(df.data){
     g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
     g.lumbreras <- tree_from_parents_vector(df.tree$parent.lumbreras)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     depth.real <- diameter(g.real)
     depth.gomez <- diameter(g.gomez)
     depth.lumbreras <- diameter(g.lumbreras)
 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
     
     depth.real <- diameter(g.real)
@@ -240,12 +293,19 @@ compare_size_depth <- function(df.data){
     depth.lumbreras <- diameter(g.lumbreras)
     depth.gomezplus <- diameter(g.gomezplus)
     
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
     data.frame(real = depth.real,
                lumbreras = depth.lumbreras,
                gomez = depth.gomez,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+               gomezplus = depth.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
                gomezplus = depth.gomezplus,
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -257,7 +317,12 @@ compare_size_depth <- function(df.data){
   df.depths <- rbindlist(df.depths.list)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   df.depths <- df.depths %>% gather(model, depth, real, gomez, lumbreras)
+=======
+  df.depths <- df.depths %>% gather(model, depth, real, gomez, gomezplus, lumbreras) %>%
+    filter(model != 'gomezplus')
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   df.depths <- df.depths %>% gather(model, depth, real, gomez, gomezplus, lumbreras) %>%
     filter(model != 'gomezplus')
@@ -270,6 +335,11 @@ compare_size_depth <- function(df.data){
     scale_colour_manual(values=c('blue', 'red', 'black')) +
     scale_shape_manual(values=c(19, 19, 1)) +
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
+    #scale_shape_manual(values=c(19, 19, 19, 1)) +
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
     #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
     #scale_shape_manual(values=c(19, 19, 19, 1)) +

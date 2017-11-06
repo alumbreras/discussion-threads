@@ -5,11 +5,14 @@
 # author: Alberto Lumbreras
 ################################################################################
 <<<<<<< HEAD
+<<<<<<< HEAD
 #set.seed(1) # Remove this in the final experiments
 
 # remove deleted posts and bots
 deleted <- c('AutoModerator', '[deleted]', 'piedbot', 'arXiv_landing_bot')
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 source('R/datasets.R')
 source('R/estimators.R')
 source('R/extract_from_db.R')
@@ -26,6 +29,9 @@ library(data.table)
 # remove deleted posts and bots
 deleted <- c('AutoModerator', '[deleted]', 'piedbot', 'arXiv_landing_bot')
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 # or remove just deleted posts, and have fun with robots
 # first results show that piedbot (france bot) is has alpha, beta, tau --> 0
@@ -46,9 +52,15 @@ df.trees <- df.trees[sample(nrow(df.trees)), ]
 df.trees <- df.trees %>% 
   group_by(user) %>% 
 <<<<<<< HEAD
+<<<<<<< HEAD
   mutate(split = ifelse(row_number() <= 0.5*n(), 
                         "train", 
                         ifelse(row_number() <= 0.75*n(), "validation", "test"))) %>%
+=======
+    mutate(split = ifelse(row_number() <= 0.5*n(), 
+                    "train", 
+                    ifelse(row_number() <= 0.75*n(), "validation", "test"))) %>%
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
     mutate(split = ifelse(row_number() <= 0.5*n(), 
                     "train", 
@@ -60,17 +72,23 @@ df.trees <- df.trees %>%
 df.users <- df.trees %>% 
   group_by(user) %>% 
 <<<<<<< HEAD
+<<<<<<< HEAD
   summarise(
     ntrain = sum(split=='train'), 
     nvalidation = sum(split=='validation'),
     ntest = sum(split=='test'), 
     total=n()) %>% 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     summarise(
       ntrain = sum(split=='train'), 
       nvalidation = sum(split=='validation'),
       ntest = sum(split=='test'), 
       total=n()) %>% 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   arrange(desc(total), desc(ntrain), desc(ntest)) %>%
   as.data.frame
@@ -82,6 +100,10 @@ df.trees %>% group_by(subforum) %>% summarise(nusers = length(unique(user)))
 # SEPARATED ANALYSIS FOR EVERY FORUM
 ################################################################################
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -89,6 +111,7 @@ subforums <- "MachineLearning"
 subforum <- "TwoXChromosomes"
 subforum <- "france"
 subforum <- "podemos"
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 # pick one
@@ -101,6 +124,8 @@ subforum <- "podemos"
 
 df.trees.all <- filter(df.trees, subforum==subforum_)
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 subforum <- "gameofthrones"
 
 # pick one
@@ -109,6 +134,9 @@ df.trees.all <- filter(df.trees, subforum==subforum_)
                 #select(user, t, popularity, parent, lag, 
                 #  grandparent, grandparents.candidates, 
                 #  postid, thread, subforum)
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 df.trees.train      <- df.trees.all %>% filter(split == 'train')
 df.trees.validation <- df.trees.all %>% filter(split == 'validation')
@@ -151,6 +179,10 @@ res <- foreach(i=1:5, .packages = packages, .inorder=FALSE) %dopar% {
                  beta = runif(1,0,20),
                  tau = runif(1))
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+  #estimation_Gomez2013(df.trees.allusers, params)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   #estimation_Gomez2013(df.trees.allusers, params)
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -171,7 +203,11 @@ res <- foreach(i=1:5, .packages = packages, .inorder=FALSE) %dopar% {
                  tau = runif(1),
                  gamma = runif(1,0,10))
 <<<<<<< HEAD
+<<<<<<< HEAD
   estimation_Gomez2013plus(df.trees.train, params)
+=======
+  estimation_Gomez2013plus(df.trees.allusers, params)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   estimation_Gomez2013plus(df.trees.allusers, params)
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -183,9 +219,13 @@ params.gomezplus <- res[[which.max(sapply(res, function(x) x$likelihood))]]
 ################################################################################
 params.lumbreras.list <- list()
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 for (k in 1:50){
     
+=======
+for (k in 10){
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 for (k in 10){
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -220,7 +260,11 @@ if(FALSE){
   params.lumbreras.list <- readRDS(paste0('data/params.lumbreras.list.', subforum_, '.rds'))
   df.trees.all <- readRDS(paste0('data/df.tree.all.', subforum_, '.data.rds'))
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -238,8 +282,12 @@ likelihoods.lumbreras.k <- vector()
 for(k in 1:length(params.lumbreras.list)){
   params <-  params.lumbreras.list[[k]]
 <<<<<<< HEAD
+<<<<<<< HEAD
   if(is.null(params)) next
   likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.validation, 
+=======
+  likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.train, 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   likelihoods.lumbreras.k[k] <- likelihood_Lumbreras2016(df.trees.train, 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
@@ -253,9 +301,15 @@ for(k in 1:length(params.lumbreras.list)){
 #AIC =  - 2loglike + 2k
 AIC.lumbreras.k <- sapply(1:length(likelihoods.lumbreras.k), 
 <<<<<<< HEAD
+<<<<<<< HEAD
                           function(k) {
                             -2*likelihoods.lumbreras.k[k] + 2*(3*k +(k-1)) 
                           })
+=======
+                            function(k) {
+                              -2*likelihoods.lumbreras.k[k] + 2*(3*k +(k-1)) 
+                            })
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
                             function(k) {
                               -2*likelihoods.lumbreras.k[k] + 2*(3*k +(k-1)) 
@@ -287,6 +341,7 @@ BIC.lumbreras.k <- sapply(1:length(likelihoods.Q),
                           })
 plot(AIC.lumbreras.k) # Use this because penalises complexity
 <<<<<<< HEAD
+<<<<<<< HEAD
 plot(BIC.lumbreras.k, xlab="k", ylab='BIC') # Use this because penalises complexity
 
 df.BIC <- data.frame(k=1:length(BIC.lumbreras.k), BIC = BIC.lumbreras.k)
@@ -307,12 +362,17 @@ k <- 15 # Choose it from visual inspection on the plot
 
 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 plot(BIC.lumbreras.k) # Use this because penalises complexity
 
 k <- which.min(AIC.lumbreras.k)
 k <- which.min(BIC.lumbreras.k)
 
 k <- 5 # Choose it from visual inspection on the plot
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 
@@ -331,6 +391,7 @@ likelihoods.train <- sapply(1:length(params.lumbreras.list),
 
 likelihoods.validation <- sapply(1:length(params.lumbreras.list), 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                  function(i) {
                                    likelihood_Lumbreras2016(df.trees.validation, 
                                                             params.lumbreras.list[[i]], 
@@ -347,6 +408,10 @@ likelihoods.test <- sapply(1:length(params.lumbreras.list),
                            function(i) {
                              likelihood_Lumbreras2016(df.trees.validation, 
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
+                           function(i) {
+                             likelihood_Lumbreras2016(df.trees.validation, 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                                                       params.lumbreras.list[[i]], 
                                                       params.lumbreras.list[[i]]$responsibilities, 
                                                       params.lumbreras.list[[i]]$pis)
@@ -354,7 +419,10 @@ likelihoods.test <- sapply(1:length(params.lumbreras.list),
 )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 likelihoods.test <- sapply(1:length(params.lumbreras.list), 
                            function(i) {
@@ -365,6 +433,9 @@ likelihoods.test <- sapply(1:length(params.lumbreras.list),
                             }
 )
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 # just to compare as baseline
 likelihood.gomez.train <- likelihood_Gomez2013(df.trees.train, params.gomez)
@@ -384,6 +455,7 @@ ggplot(df.likelihoods, aes(x=k, y=like, group=split, color=split)) +
 
 # AND THE WINNER IS....
 <<<<<<< HEAD
+<<<<<<< HEAD
 k <- 20
 k <- 15
 params.lumbreras <- params.lumbreras.list[[k]]
@@ -394,11 +466,16 @@ nusers <- as.vector(table(apply(params.lumbreras$responsibilities, 1, function(x
 cbind(params.lumbreras$alphas, params.lumbreras$betas, params.lumbreras$taus, params.lumbreras$pis, nusers)
 
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 k <- 5
 k <- 10
 params.lumbreras <- params.lumbreras.list[[k]]
 params.lumbreras$z <- as.vector(apply(params.lumbreras$responsibilities, 1, which.max))
 
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 # Info clusters
 df.clusters <- data.frame(user = rownames(params.lumbreras$responsibilities), z = params.lumbreras$z)
@@ -412,8 +489,13 @@ ggplot(df.clusters, aes(x=as.factor(z), y=total)) +
   theme(text = element_text(size=14)) +
   xlab("cluster") + ylab('posts') 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ggsave(file=paste0('ch4_', subforum, '_cluster_posts.eps'), width=100, height=75, units='mm')
 
+=======
+  ggsave(file=paste0('ch4_podemos_cluster_posts.eps'), width=100, height=70, units='mm')
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 =======
   ggsave(file=paste0('ch4_podemos_cluster_posts.eps'), width=100, height=70, units='mm')
   
@@ -441,15 +523,21 @@ title('\n Likelihood')
 df.trees_ <- readRDS("data/df.trees.rds")
 df.trees.active <-  df.trees_ %>% 
 <<<<<<< HEAD
+<<<<<<< HEAD
   filter(subforum == subforum_) %>%
   group_by(thread) %>% 
   filter(any(user %in% df.users$user)) %>%
   ungroup
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                     filter(subforum == subforum_) %>%
                     group_by(thread) %>% 
                       filter(any(user %in% df.users$user)) %>%
                     ungroup
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 # Recover the line of the responsability matrix for every user
@@ -472,6 +560,7 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
   df.tree <- df.trees.active %>%  filter(thread == th)
   #prof <- profvis({
 <<<<<<< HEAD
+<<<<<<< HEAD
   
   
   # Avoid threads of size < 2 since there is no randomness there
@@ -486,6 +575,8 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
     return(res)
   }
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
     
   # Avoid threads of size < 2 since there is no randomness there
@@ -499,12 +590,16 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
                        subforum=subforum_)  
     return(res)
     }
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   users <- df.tree$user
   # hack to add the root user, the grandpas factor needs it
   users.all <- c(df.tree$parent.user[1], users) 
   
   if(TRUE){
+<<<<<<< HEAD
 <<<<<<< HEAD
     # For Lumbreras, pre-compute the parameters of each user accoring to its cluster
     alphas <- params.lumbreras$alpha[df.tree$z]
@@ -519,6 +614,8 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
     #gammas <- params.lumbreras$gamma[df.tree$z]
     #gammas[is.na(gammas)] <- params.gomezplus$gamma # if no cluster, use Gomez
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # For Lumbreras, pre-compute the parameters of each user accoring to its cluster
   alphas <- params.lumbreras$alpha[df.tree$z]
   alphas[is.na(alphas)] <- params.gomez$alpha # if no cluster, use Gomez
@@ -531,6 +628,9 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
   
   #gammas <- params.lumbreras$gamma[df.tree$z]
   #gammas[is.na(gammas)] <- params.gomezplus$gamma # if no cluster, use Gomez
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   }
   
@@ -556,15 +656,21 @@ data.list <- foreach(i = 1:nthreads, .packages = c('igraph','dplyr')) %dopar% {
   # Gomez plus
   g.gomezplus <- gen.thread.Gomez2013plus(users.all, 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                           alpha =params.gomezplus$alpha, 
                                           beta= params.gomezplus$beta, 
                                           tau = params.gomezplus$tau,
                                           gamma = params.gomezplus$gamma)
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                                   alpha =params.gomezplus$alpha, 
                                   beta= params.gomezplus$beta, 
                                   tau = params.gomezplus$tau,
                                   gamma = params.gomezplus$gamma)
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   parents.gomezplus <- get.edgelist(g.gomezplus, names=FALSE)[,2]
   
@@ -587,6 +693,7 @@ df.synthetic.trees <- df.synthetic.trees %>% filter(complete.cases(.))
 
 if(FALSE){
 <<<<<<< HEAD
+<<<<<<< HEAD
   k <- length(params.lumbreras$alpha)
   filename <- paste0('data/generated.trees.', subforum_, '_k_', k, '.rda')
   saveRDS(df.synthetic.trees, file=filename)
@@ -595,6 +702,8 @@ if(FALSE){
   # We can merge all the trees in all the forums and work in the same dataframe
   # df.synthetic.trees <- rbindlist(list(df.gen.podemos, df.gen.gameofthrones, df.gen.france))
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 k <- length(params.lumbreras$alpha)
 filename <- paste0('data/generated.trees.', subforum_, '_k_', k, '.rda')
 saveRDS(df.synthetic.trees, file=filename)
@@ -602,6 +711,9 @@ df.synthetic.trees <- readRDS(filename)
 
 # We can merge all the trees in all the forums and work in the same dataframe
 # df.synthetic.trees <- rbindlist(list(df.gen.podemos, df.gen.gameofthrones, df.gen.france))
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 }
 
@@ -650,17 +762,23 @@ df.trees.active$z <- z[df.trees.active$userint]
 df.trees.active.test <- df.trees.active %>% filter(thread %in% df.trees.test$thread)
 df.trees.active.test$split <- ifelse(df.trees.active.test$postid %in% 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                        df.trees.test$postid, 
                                      'test', 'none')
 df.trees.active.test$split <- ifelse(df.trees.active.test$postid %in% 
                                        df.trees.train$postid, 
                                      'train', df.trees.active.test$split)
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                                      df.trees.test$postid, 
                                         'test', 'none')
 df.trees.active.test$split <- ifelse(df.trees.active.test$postid %in% 
                                      df.trees.train$postid, 
                                         'train', df.trees.active.test$split)
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 threads <- unique(df.trees.active.test$thread)
@@ -672,6 +790,7 @@ registerDoParallel(cl)
 df.preds.list <- foreach(i = 1:nthreads, 
                          .packages = c('igraph','dplyr', 'data.table'),
                          .export = 'compare_link_prediction2') %dopar% {
+<<<<<<< HEAD
 <<<<<<< HEAD
                            th <- threads[i]
                            cat('\nsubforum', i, '/', nthreads) 
@@ -693,6 +812,8 @@ df.preds.list <- foreach(i = 1:nthreads,
                            compare_link_prediction2(df.tree, params.lumbreras, params.gomez, params.gomezplus)
                          }
 =======
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   th <- threads[i]
   cat('\nsubforum', i, '/', nthreads) 
   df.tree <- df.trees.active.test %>%  filter(thread == th)
@@ -712,6 +833,9 @@ df.preds.list <- foreach(i = 1:nthreads,
   df.tree <- df.tree %>% select(t, post, parent, date, user, parent.user, z, split, subforum)
   compare_link_prediction2(df.tree, params.lumbreras, params.gomez, params.gomezplus)
 }
+<<<<<<< HEAD
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+=======
 >>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 stopCluster(cl)
 df.preds <- rbindlist(df.preds.list)

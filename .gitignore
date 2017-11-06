@@ -5,8 +5,11 @@
 *.out
 *~
 results.md
+<<<<<<< HEAD
 *.png
 *.rda
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 # Large files such as database, or big R objects
 data/
