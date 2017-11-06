@@ -5,6 +5,7 @@
 *.out
 *~
 results.md
+*.png
 
 # Large files such as database, or big R objects
 data/
