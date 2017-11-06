@@ -26,7 +26,11 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
   for(t in idx.tr.te){
     # skip if the post is not marked for training
     #if(df.tree$split[t] != 'test') next
+<<<<<<< HEAD
     
+=======
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     # Data common too all models
     b <- rep(0,t)
     lags <- t:1
@@ -63,6 +67,7 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
     # Lumbreras 2016
     ############################
     if(TRUE){
+<<<<<<< HEAD
       #k <- z[V(tree)$userint[t+1]] # Attention to the t+1!
       k <- z[t]
       if (is.na(k)){
@@ -77,6 +82,22 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
       predicted.lumbreras <- which.max(probs.lumbreras)
       like.lumbreras <- log(probs.lumbreras[chosen]) - log(sum(probs.lumbreras))
       ranking.lumbreras <- rank(-probs.lumbreras)[chosen] 
+=======
+        #k <- z[V(tree)$userint[t+1]] # Attention to the t+1!
+        k <- z[t]
+        if (is.na(k)){
+          stop("A user has no group. This user shouldnt be in the tests")
+        }
+        alpha <- params.lumbreras$alphas[k]
+        beta <- params.lumbreras$betas[k]
+        tau <- params.lumbreras$taus[k]
+        b[1] <- beta
+        probs.lumbreras <- alpha*popularities + b + tau^lags
+        
+        predicted.lumbreras <- which.max(probs.lumbreras)
+        like.lumbreras <- log(probs.lumbreras[chosen]) - log(sum(probs.lumbreras))
+        ranking.lumbreras <- rank(-probs.lumbreras)[chosen] 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     }
     if(FALSE){
       k <- z[t] 
@@ -123,6 +144,7 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
     # ranking: position in which the real choice was placed. Best is 1. Worst is current thread size
     
     df.preds <- rbindlist(list(df.preds,
+<<<<<<< HEAD
                                data.frame(predicted.lumbreras = predicted.lumbreras,
                                           like.lumbreras = like.lumbreras,
                                           ranking.lumbreras =  ranking.lumbreras,
@@ -148,6 +170,33 @@ compare_link_prediction2 <- function(df.tree, params.lumbreras, params.gomez, pa
                                           z = df.tree$z[t],
                                           split = df.tree$split[t],
                                           subforum = subforum)))
+=======
+                          data.frame(predicted.lumbreras = predicted.lumbreras,
+                                     like.lumbreras = like.lumbreras,
+                                     ranking.lumbreras =  ranking.lumbreras,
+                                     predicted.gomez =  predicted.gomez,
+                                     like.gomez =   like.gomez,
+                                     ranking.gomez = ranking.gomez,
+                                     predicted.gomezplus =  predicted.gomezplus,
+                                     like.gomezplus =   like.gomezplus,
+                                     ranking.gomezplus = ranking.gomezplus,
+                                     predicted.barabasi = predicted.barabasi,
+                                     like.barabasi = like.barabasi,
+                                     ranking.barabasi = ranking.barabasi,
+                                     predicted.tau =  predicted.tau,
+                                     like.tau = like.tau,
+                                     ranking.tau = ranking.tau,
+                                     predicted.tau.inv = predicted.tau.inv,
+                                     like.tau.inv = like.tau.inv,
+                                     ranking.tau.inv = ranking.tau.inv,
+                                     time.to.root = time.to.root,
+                                     tree.size = t,
+                                     chosen = chosen,
+                                     user = df.tree$user[t],
+                                     z = df.tree$z[t],
+                                     split = df.tree$split[t],
+                                     subforum = subforum)))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
   }
   df.preds
@@ -163,9 +212,13 @@ plot_ranking_benchmarks2 <- function(df.preds){
   df.preds <- df.preds[complete.cases(df.preds),] 
   #df.preds$subforum <- as.character(df.preds$subforum)
   
+<<<<<<< HEAD
   ##############################################################################
   # LIKELIHOOODS BY GROUP
   ##############################################################################
+=======
+  ### LIKELIHOOODS
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Sum of scores (interested on like.model)
   df.likes <- df.preds %>% group_by(split, subforum,z) %>% 
     summarise(lumbreras = sum(like.lumbreras),
@@ -177,7 +230,11 @@ plot_ranking_benchmarks2 <- function(df.preds){
   df.likes <- df.likes %>% 
     filter(split == 'test') %>%
     gather(key = 'model', value = 'like', 
+<<<<<<< HEAD
            -subforum, -split, -z, -sample) 
+=======
+     -subforum, -split, -z, -sample) 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   g1 <- ggplot(df.likes, aes(x=as.factor(z), y=-like/sample, group=model, fill=model)) +
     geom_bar(stat='identity', colour = 'black', position= 'dodge', width=.50) +
@@ -192,6 +249,7 @@ plot_ranking_benchmarks2 <- function(df.preds){
           legend.key.size = unit(0.4, "cm"),
           legend.key = element_blank()) +
     #guides(fill = guide_legend(override.aes = list(size=0.5)))+
+<<<<<<< HEAD
    # guides(colour = "none",
   #         linetype = guide_legend(override.aes = list(linetype = 0))) +
     xlab('cluster') + ylab("negative loglikelihood")
@@ -200,6 +258,18 @@ plot_ranking_benchmarks2 <- function(df.preds){
          width=100, height=75, units='mm')
 
    # HITS
+=======
+    # guides(colour = "none",
+    #         linetype = guide_legend(override.aes = list(linetype = 0))) +
+    xlab('cluster') + ylab("negative loglikelihood")
+  print(g1)
+  ggsave(file=paste0('ch4_linkprediction_likelihoods_', subforum_, '_k5.eps'),
+         width=100, height=75, units='mm')
+  
+  
+  
+  # HITS
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   df.hits <- df.preds %>% group_by(split, subforum, z) %>% 
     summarise(lumbreras = sum(predicted.lumbreras==chosen)/n(),
               gomez = sum(predicted.gomez==chosen)/n(),
@@ -214,7 +284,11 @@ plot_ranking_benchmarks2 <- function(df.preds){
   df.hits$model <- factor(df.hits$model, levels = c('barabasi', 'tau', 'gomez', 'lumbreras'))
   
   g.hits <- ggplot(df.hits, aes(x=as.factor(z), y=hit, group=model, fill=model)) +
+<<<<<<< HEAD
     geom_bar(stat='identity', colour = 'black', position= 'dodge') +
+=======
+    geom_bar(stat='identity', colour = 'black', position= 'dodge', width=.50) +
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     scale_fill_brewer(palette="OrRd")+
     #scale_fill_grey()+
     theme_bw() +
@@ -228,20 +302,37 @@ plot_ranking_benchmarks2 <- function(df.preds){
            linetype = guide_legend(override.aes = list(linetype = 0))) +
     xlab('cluster') + ylab("hits")
   print(g.hits)
+<<<<<<< HEAD
   ggsave(file=paste0('snam_linkprediction_hits_', subforum_, '_k', k, '.eps'), 
          width=210, height=75, units='mm')
 
+=======
+  ggsave(file=paste0('ch4_linkprediction_hits_', subforum_, '_k15.eps'), 
+         width=210, height=75, units='mm')
+  save(g2, file = "gplot_podemos_k5_linkprediction_hits.rda")
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Add baseline predictions
   df.preds <- mutate(df.preds, like.baseline=log(1/tree.size))
   df.preds <- mutate(df.preds, predicted.baseline=1)
   
+<<<<<<< HEAD
 
+=======
+  # Seconds to minutes
+  df.preds <- mutate(df.preds, mins.to.root = floor(time.to.root/60))
+  df.preds <- mutate(df.preds, hours.to.root = floor(time.to.root/(3600)))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   ########################### PLOTS 2 ##########################################
   ##############################################################################
   # RANKING BY SIZE
   ##############################################################################
+<<<<<<< HEAD
   df.rankings <- df.preds %>% filter(split == 'test') %>%
+=======
+  df.rankings <- df.preds %>% filter(split == 'train') %>%
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     select(size = tree.size,
            user, 
            z,
@@ -250,6 +341,10 @@ plot_ranking_benchmarks2 <- function(df.preds){
            barabasi = ranking.barabasi, 
            tau = ranking.tau, 
            gomez = ranking.gomez, 
+<<<<<<< HEAD
+=======
+           #gomez.plus = ranking.gomezplus, 
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
            lumbreras = ranking.lumbreras,
            subforum) %>% 
     gather(key = 'model', value = 'rank', 
@@ -257,6 +352,7 @@ plot_ranking_benchmarks2 <- function(df.preds){
     mutate(ranking.error.abs = rank-1,
            ranking.error = (rank-1)/(size-1))
   
+<<<<<<< HEAD
   df.rankings$model <- factor(df.rankings$model, levels = c('barabasi', 'tau', 'gomez', 'lumbreras'))
   
   
@@ -363,6 +459,134 @@ plot_ranking_benchmarks2 <- function(df.preds){
   
   
   
+=======
+  
+  df.rankings$model <- factor(df.rankings$model, levels = c('barabasi', 'tau', 'gomez', 'lumbreras'))
+  
+  ### RANKING ERRORS BARS (with SE errors)
+  df.rankings_ <- df.rankings %>% group_by(subforum, model, z) %>%
+    summarise(mean = mean(ranking.error), 
+              sd = sd(ranking.error), 
+              se = sd(ranking.error)/n(),
+              samples = n()) %>%
+    filter(model != 'gomez.plus')
+  
+  # Bars
+  ggplot(df.rankings_, aes(x=as.factor(z), y = mean, group=model, fill=model)) +
+    geom_bar(stat='identity', colour = 'black', position = 'dodge') + 
+    geom_errorbar(position = 'dodge', aes(ymin=mean, ymax = mean))+
+    scale_fill_brewer(palette="OrRd") + 
+    theme_bw() + 
+    theme(strip.background = element_rect(fill = 'white'), 
+          legend.title = element_blank(),
+          legend.key = element_blank())
+    ggsave(file=paste0('ch4_linkprediction_errors', subforum_, '_k10.eps'))
+  
+  
+  # Lines
+  g <- ggplot(filter(df.rankings, size<100), aes(x=size, y=ranking.error, group=model, 
+                               color=model, shape=model, linetype=model)) +
+        #geom_point(alpha=0.2) + 
+        stat_summary(fun.y= mean, aes(group=model), geom='point', alpha=1, size=1.5) +
+        stat_summary(fun.y= mean, aes(group=model), geom='line', alpha=1, size=0.5) +
+        #geom_abline(intercept = 0, slope=1, linetype='dotted') +
+        #geom_abline(intercept = 0, slope=0.5, linetype='dashed') +
+        theme_bw() + theme(strip.background = element_rect(fill = 'white'),
+                           legend.position = 'top',
+                           text = element_text(size=12),
+                           legend.title = element_blank(),
+                           legend.key = element_blank()) +
+        guides(colour = guide_legend(override.aes = list(size=2)),
+               linetype = guide_legend(override.aes = list(linetype = 0))) +
+        ylab('Normalized Ranking Error')
+        print(g) 
+        ggsave(file=paste0('ch4_linkprediction_rankerror_by_size_abs', subforum_, 'k5.eps'),
+               width=210, height=75, units='mm')
+        save(g, file = "gplot_podemos_k5_linkprediction__rankerror_by_size.rda")
+        
+        # RANK BY GROUP
+        ##############################################################################
+        ## Boxplots
+        df.rankings_ <- df.rankings
+        df.rankings_$z <- as.factor(df.rankings_$z)
+        
+        g.boxplots <- ggplot(filter(df.rankings_, size<1000), 
+                    aes(x=z, y = ranking.error)) +
+          geom_boxplot(aes(x=z, y = ranking.error, fill=model, position = 'dodge'), 
+                       outlier.size=0.5, outlier.shape=3, width=0.5) +
+          scale_fill_brewer(palette="OrRd") + 
+          theme_bw() + theme(strip.background = element_rect(fill = 'white'), 
+                             text = element_text(size=12),
+                             legend.title = element_blank(),
+                             legend.key = element_blank()) +
+          guides(colour = guide_legend(override.aes = list(size=2)),
+                 linetype = guide_legend(override.aes = list(linetype = 0))) +
+          xlab("cluster") + ylab('Normalised Ranking Error')
+        print(g.boxplots)
+        ggsave(file=paste0('ch4_linkprediction_error_boxplots', subforum_, '_k5.eps'), 
+               width=150, height=70, units='mm')
+        
+        
+        # Only boxes, means and medians
+        df.rankings_ <- filter(df.rankings_, size<1000)
+        g.boxplots <- ggplot(df.rankings_, aes(x=z,y = ranking.error, fill=model)) +
+          geom_boxplot(outlier.size=0, outlier.shape = NA, width=0.5) +
+          #geom_boxplot(aes(x=z, y = ranking.error, fill=model, position = 'dodge'), 
+          #             outlier.size=0.5, outlier.shape=3) +
+          stat_summary(fun.y=mean, geom = 'point', aes(group=model), color = 'black',  
+                       size=2, 
+                       position=position_dodge(width=0.38)) +
+          scale_fill_brewer(palette="OrRd") + 
+          theme_bw() + theme(strip.background = element_rect(fill = 'white'), 
+                             text = element_text(size=12),
+                             legend.position = 'top',
+                             legend.title = element_blank(),
+                             legend.key = element_blank()) +
+          guides(colour = guide_legend(override.aes = list(size=2)),
+                 linetype = guide_legend(override.aes = list(linetype = 0))) +
+          xlab("cluster") + ylab('Normalized Ranking Error')
+        print(g.boxplots)
+        ggsave(file=paste0('ch4_linkprediction_NRE_whiskers_', subforum_, '_k5.eps'), 
+               width=210, height=75, units='mm')
+        
+        
+        
+        
+        
+        combined <- grid_arrange_shared_legend(g.hits, g.boxplots, ncol = 2, nrow = 1)
+        ggsave(file=paste0('ch4_linkprediction_hits_whispers', subforum_, '_k5.eps'), combined, width=210, height=100, units='mm')
+        
+        gg <-arrangeGrob(g.hits,g.boxplots)
+        grid.newpage()
+        grid.draw(gg)
+        
+        
+        # alternative 2 (means)
+        df.rankings_ <- df.rankings
+        df.rankings_$z <- as.factor(df.rankings_$z)
+        g <- ggplot(filter(df.rankings, size<20000), aes(x=as.factor(z), 
+                                                         y=ranking.error,
+                                                         group=model,
+                                                         color=model, 
+                                                         shape= model, 
+                                                         linetype=model)) +
+          stat_summary_bin(fun.y= mean, geom='point', size=2) +
+          stat_summary_bin(fun.y= mean, geom='line') +
+          theme_bw() + theme(strip.background = element_rect(fill = 'white'), 
+                             legend.position = 'top',
+                             legend.title = element_blank(),
+                             legend.key = element_blank()) +
+                             #axis.text.x = element_blank(),) +
+          guides(colour = guide_legend(override.aes = list(size=2)),
+                 linetype = guide_legend(override.aes = list(linetype = 0))) +
+          xlab("cluster") + ylab('Normalized Ranking Error')
+        print(g)
+        ggsave(file=paste0('ch4_linkprediction_NRE_meanlines_', subforum_, 'k5.eps'),
+               width=100, height=75, units='mm')
+        
+        
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # RANK BY CHOSEN
   #############################################################################
   # This might be insteresting for Vicenc and Andreas
@@ -371,10 +595,17 @@ plot_ranking_benchmarks2 <- function(df.preds){
   # NOT TRUE, the former graph contradicts this hypotesis:
   # tau is worse for long threads. Its just better when the choice is the
   # last post, of course. But this does not happen too often.
+<<<<<<< HEAD
   
   # memory consuming
   g <- ggplot(filter(df.rankings, size<10), aes(x=chosen, y=ranking.error, group=model, 
                                                 color=model, shape=model, linetype=model)) +
+=======
+        
+  # memory consuming
+  g <- ggplot(filter(df.rankings, size<10), aes(x=chosen, y=ranking.error, group=model, 
+                               color=model, shape=model, linetype=model)) +
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     stat_smooth(method='loess', geom='point')+
     #stat_summary(fun.y= mean, aes(group=model), geom='point', alpha=1, size=1.5) +
     #stat_summary(fun.y= mean, aes(group=model), geom='line', alpha=1, size=0.5) +
@@ -388,9 +619,32 @@ plot_ranking_benchmarks2 <- function(df.preds){
     guides(colour = guide_legend(override.aes = list(size=2)),
            linetype = guide_legend(override.aes = list(linetype = 0)))
   print(g)
+<<<<<<< HEAD
   ggsave(file=paste0('snam_linkprediction_rank_by_chosen.png'), 
          width=200, height=70, units='mm')        
   
   }
+=======
+  ggsave(file=paste0('ch4_linkprediction_rank_by_chosen.png'), 
+         width=200, height=70, units='mm')        
+        
+      
+
+  
+  # RANK BY TIME TO ROOT
+  ##############################################################################
+  g <- ggplot(filter(df.rankings, minutes<60), aes(x=minutes, y=rank, group=model, 
+                                                   color=model, shape=model, linetype=model)) +
+    stat_summary(fun.y= mean, aes(group=model), geom='point', alpha=1, size=1.5) +
+    stat_summary(fun.y= mean, aes(group=model), geom='line', alpha=1, size=0.5) +
+    facet_grid(. ~ subforum, scales = 'free') + 
+    theme_bw() + theme(strip.background = element_rect(fill = 'white'), 
+                       legend.title = element_blank(),
+                       legend.key = element_blank(),
+                       aspect.ratio=1) +
+    guides(colour = guide_legend(override.aes = list(size=2)),
+           linetype = guide_legend(override.aes = list(linetype = 0)))
+  print(g)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 }
 

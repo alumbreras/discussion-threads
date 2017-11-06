@@ -35,33 +35,61 @@ compare_degrees <- function(df.data){
     g.real <- tree_from_parents_vector(df.tree$parent.real)
     g.lumbreras <- tree_from_parents_vector(df.tree$parent.lumbreras)
     g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
+<<<<<<< HEAD
 
+=======
+    g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     # Compute metric
     degrees.real = degree(g.real, mode='all')
     degrees.lumbreras = degree(g.lumbreras, mode='all')
     degrees.gomez = degree(g.gomez, mode='all')
+<<<<<<< HEAD
 
+=======
+    degrees.gomezplus = degree(g.gomezplus, mode='all')
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
     data.frame(real = degrees.real,
                lumbreras = degrees.lumbreras,
                gomez = degrees.gomez,
+<<<<<<< HEAD
+=======
+               gomezplus = degrees.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                subforum = subforum)
   }
   stopCluster(cl)
   df.degrees <- rbindlist(df.degrees.list)
   
   # Frequency by forum all with dplyr and withour table()
+<<<<<<< HEAD
   df.degrees <- df.degrees %>% gather(model, degree, real, gomez, lumbreras)
   df.degrees.freqs <- df.degrees %>% group_by(subforum, model, degree) %>% summarise(freq = n()) %>%
     group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup
+=======
+  df.degrees <- df.degrees %>% gather(model, degree, real, gomez, gomezplus, lumbreras)
+  df.degrees.freqs <- df.degrees %>% group_by(subforum, model, degree) %>% summarise(freq = n()) %>%
+    group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup %>%
+    filter(model != 'gomezplus')
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   
   g <- ggplot(df.degrees.freqs, aes(x=degree, y=prob, color=model, shape=model)) + 
     scale_y_log10() + scale_x_log10()+
     geom_point(size=1.5) +
     scale_colour_manual(values=c('blue', 'red', 'black')) +
+<<<<<<< HEAD
     scale_shape_manual(values=c(19, 19, 1)) +
     scale_alpha_manual(values=c(1,1,0.1))+
+=======
+    #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
+    scale_shape_manual(values=c(19, 19, 1)) +
+    #scale_shape_manual(values=c(19, 19, 19, 1)) +
+    #scale_alpha_manual(values=c(1,1,0.1, 19))+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     #geom_line(stat='smooth', method= 'lm', alpha=0.5) +
     guides(colour = guide_legend(override.aes = list(size=2))) +
     theme_bw() +
@@ -107,15 +135,27 @@ compare_subtrees <- function(df.data){
       # Extract real and generated graphs 
       g.real <- tree_from_parents_vector(df.tree$parent.real)
       g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
+<<<<<<< HEAD
+=======
+      g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
       g.lumbreras <- tree_from_parents_vector(df.tree$parent.lumbreras)
       
       subtrees.real <- ego_size(g.real, order=1000, mode='in', mindist=1)
       subtrees.gomez <- ego_size(g.gomez, order=1000, mode='in', mindist=1)
+<<<<<<< HEAD
+=======
+      subtrees.gomezplus <- ego_size(g.gomezplus, order=1000, mode='in', mindist=1)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
       subtrees.lumbreras <- ego_size(g.lumbreras, order=1000, mode='in', mindist=1)
       
       
       data.frame(real = subtrees.real,
                  gomez = subtrees.gomez,
+<<<<<<< HEAD
+=======
+                 gomezplus = subtrees.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                  lumbreras = subtrees.lumbreras,
                  subforum = subforum)
     }
@@ -123,15 +163,28 @@ compare_subtrees <- function(df.data){
     df.sizes <- rbindlist(df.sizes.list)
     
     # Frequency by forum all with dplyr and withour table()
+<<<<<<< HEAD
     df.sizes.freqs <- df.sizes %>% group_by(subforum, model, size) %>% summarise(freq = n()) %>%
       group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup
+=======
+    df.sizes <- df.sizes %>% gather(model, size, real, gomez, gomezplus, lumbreras)
+    df.sizes.freqs <- df.sizes %>% group_by(subforum, model, size) %>% summarise(freq = n()) %>%
+      group_by(subforum, model) %>% mutate(prob = freq / sum(freq)) %>% ungroup %>%
+      filter(model != 'gomezplus')
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     
     g <- ggplot(df.sizes.freqs, aes(x=size, y=prob, color=model, shape=model)) + 
       scale_y_log10() + scale_x_log10() +
       geom_point(size=1.5) +
       scale_colour_manual(values=c('blue', 'red', 'black')) +
       scale_shape_manual(values=c(19, 19, 1)) +
+<<<<<<< HEAD
       scale_alpha_manual(values=c(1,1,0.1))+
+=======
+      #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
+      #scale_shape_manual(values=c(19, 19, 19, 1)) +
+      #scale_alpha_manual(values=c(1,1,0.1))+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
       guides(colour = guide_legend(override.aes = list(size=2))) +
       theme_bw() +
       theme(strip.background = element_rect(fill = 'white'), 
@@ -173,15 +226,29 @@ compare_size_depth <- function(df.data){
     g.real <- tree_from_parents_vector(df.tree$parent.real)
     g.gomez <- tree_from_parents_vector(df.tree$parent.gomez)
     g.lumbreras <- tree_from_parents_vector(df.tree$parent.lumbreras)
+<<<<<<< HEAD
 
     depth.real <- diameter(g.real)
     depth.gomez <- diameter(g.gomez)
     depth.lumbreras <- diameter(g.lumbreras)
 
+=======
+    g.gomezplus <- tree_from_parents_vector(df.tree$parent.gomezplus)
+    
+    depth.real <- diameter(g.real)
+    depth.gomez <- diameter(g.gomez)
+    depth.lumbreras <- diameter(g.lumbreras)
+    depth.gomezplus <- diameter(g.gomezplus)
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
     data.frame(real = depth.real,
                lumbreras = depth.lumbreras,
                gomez = depth.gomez,
+<<<<<<< HEAD
+=======
+               gomezplus = depth.gomezplus,
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
                size = vcount(g.real), # all trees have the same size
                thread=th,
                subforum = subforum)
@@ -189,7 +256,12 @@ compare_size_depth <- function(df.data){
   stopCluster(cl)
   df.depths <- rbindlist(df.depths.list)
 
+<<<<<<< HEAD
   df.depths <- df.depths %>% gather(model, depth, real, gomez, lumbreras)
+=======
+  df.depths <- df.depths %>% gather(model, depth, real, gomez, gomezplus, lumbreras) %>%
+    filter(model != 'gomezplus')
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   
   g <- ggplot(df.depths, aes(x=size, y=depth, color=model, shape=model)) + 
     scale_y_log10() + 
@@ -197,6 +269,11 @@ compare_size_depth <- function(df.data){
     stat_summary(fun.y= mean, aes(group=model), geom='point', alpha=1, size=1.5) +
     scale_colour_manual(values=c('blue', 'red', 'black')) +
     scale_shape_manual(values=c(19, 19, 1)) +
+<<<<<<< HEAD
+=======
+    #scale_colour_manual(values=c('blue', 'green' , 'red', 'black')) +
+    #scale_shape_manual(values=c(19, 19, 19, 1)) +
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     #geom_line(stat='smooth', method= 'lm', alpha=0.5) +
     guides(colour = guide_legend(override.aes = list(size=2))) +
     theme_bw() +

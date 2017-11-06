@@ -20,9 +20,13 @@ likelihood_post <- function(row, params){
   tau <- params$tau
   
   c(as.matrix(log(alpha * row['popularity'] + beta*(row['parent']==1) + tau^row['lag']) -
+<<<<<<< HEAD
      #log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
      log(2*alpha*(row['t']-1)   + beta + tau*(tau^row['t']-1)/(tau-1))))
   # FIXED March 2017: it is -1, not -1/2
+=======
+     log(2*alpha*(row['t']-1/2)   + beta + tau*(tau^row['t']-1)/(tau-1))))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # -1/2 because root has at least degree 1 (to follow Gomez 2013)
   # if the root starts with degree 0, then it should be:
   # log(2*alpha*(row['t']-1)   + beta + tau*(tau^row['t']-1)/(tau-1))
@@ -36,9 +40,13 @@ likelihood_post_plus <- function(row, params){
   gamma <- params$gamma
   
   c(as.matrix(log(alpha * row['popularity'] + beta*(row['parent']==1) + gamma*(row['granparent']) + tau^row['lag']) -
+<<<<<<< HEAD
                 #log(2*alpha*(row['t']-1/2)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
                 log(2*alpha*(row['t']-1)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
 
+=======
+                log(2*alpha*(row['t']-1/2)   + beta  + gamma*row['grandparents.candidates'] + tau*(tau^row['t']-1)/(tau-1))))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # -1/2 because root has at least degree 1 (to follow Gomez 2013)
   # if the root starts with degree 0, then it should be:
   # log(2*alpha*(row['t']-1)   + beta + tau*(tau^row['t']-1)/(tau-1))
@@ -53,6 +61,7 @@ likelihood_post_plus <- function(row, params){
 #' @export
 likelihood_Gomez2013_deprecated <- function(data, params){
   sum(apply(data, 1, function(x) likelihood_post(x, params)))
+<<<<<<< HEAD
 }
 
 # x100 times faster (for large dataframes)
@@ -102,6 +111,49 @@ likelihood_Gomez2013_all_plus <- function(data, params){
   
 }
 
+=======
+}
+
+# x100 times faster (for large dataframes)
+likelihood_Gomez2013 <- function(data, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  sum(log(alpha*data['popularity'] + beta*(data['parent']==1) + tau^data['lag']))-
+  sum(log(2*alpha*(data['t']-1/2)   + beta + tau*(tau^data['t']-1)/(tau-1)))
+}
+
+# x100 times faster (for large dataframes)
+likelihood_Gomez2013plus <- function(data, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  gamma <- params$gamma
+  sum(log(alpha*data['popularity'] + beta*(data['parent']==1) + gamma*data['grandparent'] + tau^data['lag']))-
+    sum(log(2*alpha*(data['t']-1/2)   + beta + gamma*data['grandparents.candidates'] + tau*(tau^data['t']-1)/(tau-1)))
+}
+
+# like Gomez 2013 but does not make the sum
+#' Needed during the EM for matrix computations
+#' @param params list of parameters
+likelihood_Gomez2013_all <- function(data, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  log(alpha*data['popularity'] + beta*as.numeric(data['parent']==1) + tau^data['lag'])-
+  log(2*alpha*(data['t']-1/2)   + beta + tau*(tau^data['t']-1)/(tau-1))
+}
+
+likelihood_Gomez2013_all_plus <- function(data, params){
+  alpha <- params$alpha
+  beta <- params$beta
+  tau <- params$tau
+  gamma <- params$gamma
+  log(alpha*data['popularity'] + beta*as.numeric(data['parent']==1) + gamma*data['grandparent'] + tau^data['lag'])-
+    log(2*alpha*(data['t']-1/2)   + beta + gamma*data['grandparents.candidates'] + tau*(tau^data['t']-1)/(tau-1))
+}
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
 
 #' The part of the lower bound that we optimize in the M-step
 #' @param params vector of initial parameters

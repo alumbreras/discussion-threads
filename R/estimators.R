@@ -12,7 +12,11 @@ estimation_Gomez2013_deprecated <- function(df.trees, params=list(alpha=0.5, bet
     params <- list(alpha = params[1], beta=params[2], tau=params[3])
     sum(apply(df.trees, 1, function(i) likelihood_post(i, params)))
   }
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   sol <- nmkb(unlist(params), Qopt,
               lower = c(0,0,0), upper = c(Inf, Inf, 1),
               control = list(maximize=TRUE),
@@ -30,7 +34,11 @@ estimation_Gomez2013 <- function(df.trees, params=list(alpha=0.5, beta=0.5, tau=
   df.trees <- df.trees %>% filter(t>1)
   users.after <- length(unique(df.trees$user))
   if(users.before != users.after) warning("Remove users that only reply to root")
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   Qopt <- function(params, df.trees){
     params <- list(alpha = params[1], beta=params[2], tau=params[3])
     likelihood_Gomez2013(df.trees, params)
@@ -90,10 +98,17 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
   stopifnot(all(params$alphas > 0))
   stopifnot(all(params$betas > 0))
   stopifnot(all(params$taus > 0))
+<<<<<<< HEAD
   
   # Copy of the original data with modifications
   data_ <- data
   
+=======
+
+  # Copy of the original data with modifications
+  data_ <- data
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Remove t=1 to avoid strange things like NA
   # stop if some user is lost in the process
   # (users that only have replies to root)
@@ -101,12 +116,18 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
   data <- data %>% filter(t>1)
   users.after <- length(unique(data$user))
   if(users.before != users.after) warning("Remove users that only reply to root")
+<<<<<<< HEAD
   
   
+=======
+
+    
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
   # Set up cluster for parallelisation
   ncores <- detectCores() - 2
   cl <- makeCluster(ncores, outfile="", port=11439)
   registerDoParallel(cl)
+<<<<<<< HEAD
   
   
   # Internal function to update responsibilities of users
@@ -116,6 +137,17 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
     K <- length(alphas) # number of clusters
     Xu <- filter(data, id_==u) # all posts from user
     
+=======
+
+
+  # Internal function to update responsibilities of users
+  # Computes E(z_uk) over the posterior distribution p(z_uk | X, theta)
+  update_responsibilities <- function(data, u, pis, alphas, betas, taus){
+
+    K <- length(alphas) # number of clusters
+    Xu <- filter(data, id_==u) # all posts from user
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     logfactors <- rep(0,K)
     for (k in 1:K){
       params.k <- list(alpha = alphas[k], beta = betas[k], tau = taus[k])
@@ -256,6 +288,217 @@ estimation_Lumbreras2016 <- function(data, params, niters=10){
        likelihoods.Q = likelihoods.Q)
 }
 
+<<<<<<< HEAD
+
+
+#' Expectation-Maximization algorithm to find clusters and
+#' parameters of each cluster
+#' @param data df.trees dataframe of posts
+#' @param params list of initial parameters
+#' @return list of final parameters
+#' # TODO: deal with cases of empty clusters or 1 user, stranger things happens...
+estimation_Lumbreras2016plus <- function(data, params, niters=10){
+  stopifnot(all(params$taus<1))
+  stopifnot(all(params$alphas > 0))
+  stopifnot(all(params$betas > 0))
+  stopifnot(all(params$gamma > 0))
+  
+  # Copy of the original data with modifications
+  data_ <- data
+  
+  # Remove t=1 to avoid strange things like NA
+  # stop if some user is lost in the process
+  # (users that only have replies to root)
+  users.before <- length(unique(data$user))
+  data <- data %>% filter(t > 1)
+  users.after <- length(unique(data$user))
+  if(users.before != users.after) warning("Remove users that only reply to root")
+  
+  
+  # Set up cluster for parallelisation
+  ncores <- detectCores() - 2
+  cl <- makeCluster(ncores, outfile="", port=11439)
+  registerDoParallel(cl)
+  
+  
+  
+  update_responsibilities <- function(data, u, pis, alphas, betas, taus, gammas){
+    # Compute E(z_uk) over the posterior distribution p(z_uk | X, theta)
+    
+    K <- length(alphas) # number of clusters
+    Xu <- filter(data, id_==u) # all posts from user
+    
+    logfactors <- rep(0,K)
+    for (k in 1:K){
+      params.k <- list(alpha = alphas[k], beta = betas[k], tau = taus[k], gamma = gammas[k])
+      logfactors[k] <- log(pis[k]) + likelihood_Gomez2013(Xu, params.k)
+      #logfactors[k] <- log(pis[k]) + sum(apply(Xu, 1, likelihood_post, params.k))
+    }
+    
+    logfactors <- logfactors - max(logfactors) # avoid numerical underflow
+    responsibilities_u <- exp(logfactors)/sum(exp(logfactors))
+    responsibilities_u
+  }
+  
+=======
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+  # Create internal user ids. They will correspond to their row
+  # in the matrix of responsibilities
+  # We will give their real ids back at the end
+  user.realids <- unique(data$user)
+  data$id_ <- match(data$user, unique(data$user))
+<<<<<<< HEAD
+  data <- data %>% select(id_, t, popularity, parent, lag, grandparent, grandparents.candidates)
+=======
+  data <- data %>% select(id_, t, popularity, parent, lag)
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+  
+  U <- length(unique(data$id_))
+  userids <- sort(unique(data$id_))
+  alphas <- params$alpha
+  betas <- params$beta
+  taus <- params$tau
+<<<<<<< HEAD
+  gammas <- params$gamma
+  
+  K <- length(alphas)
+  
+  responsibilities <- matrix(1/K, nrow = U, ncol = K)
+  pis <- rep(1/ncol(responsibilities), ncol(responsibilities))
+  
+  traces <- matrix(0, nrow=niters, ncol=K)
+  likes <- rep(NA, niters)
+  like.last <- -Inf
+  iter <- 1
+=======
+
+  K <- length(alphas)
+
+  responsibilities <- matrix(1/K, nrow = U, ncol = K)
+  pis <- rep(1/ncol(responsibilities), ncol(responsibilities))
+
+  likelihoods.complete <- rep(NA, niters)
+  likelihoods.Q <- rep(NA, niters)
+
+  like.last <- -Inf
+  iter <- 1
+  
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+  for(iter in 1:niters){
+    
+    cat("\n**********ITERATION**********: ", iter, "\n")
+    
+    # EXPECTATION
+    # Given the parameters of each cluster, 
+    #find the responsability of each user in each cluster
+    #################################################################
+    cat("\nExpectation...")
+    responsibilities <- foreach(u=userids, .packages=c('dplyr'), 
+                                .export=c('likelihood_Gomez2013'), 
+                                .combine=rbind) %dopar% 
+<<<<<<< HEAD
+                                {
+                                  update_responsibilities(data, u, pis, alphas, betas, taus, gammas)
+                                }
+    
+    cat("\nCluster distribution:\n", colSums(responsibilities))
+    
+=======
+                        {
+                          update_responsibilities(data, u, pis, alphas, betas, taus)
+                        }
+    
+    cat("\nCluster distribution (1:5):\n", head(colSums(responsibilities)),5)
+
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
+    # MAXIMIZATION
+    # Given the current responsibilities and pis, find the best parameters for each cluster
+    ################################################################
+    cat("\nMaximization...")
+    # Parallel optimization for cluster k=1,...,K
+    # neldermead::fminbnd does not deal well with boundaries
+    # nlminb and nmkb give the same solution.
+    # nmkb is a little bit faster
+    # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
+    #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
+<<<<<<< HEAD
+=======
+    # TODO: we might try starting from somewhere else in the parameter space
+    # just in case. And discard worse solutions.
+    sols <- foreach(k=1:K, .packages=c('dfoptim'), 
+                    .export=c('likelihood_post', 'likelihood_Gomez2013_all',
+                              'Qopt_opt')) %dopar% {
+      nmkb(c(alphas[k], betas[k], taus[k]), Qopt_opt, 
+           lower = c(0,0,0), upper = c(Inf, Inf, 1), 
+           control = list(maximize=TRUE),
+           data = data, responsibilities = responsibilities, pis = pis, k=k)
+    }
+            
+
+    # Store updated parameters
+    alphas <- unlist(lapply(sols, function(x) x$par[1]))
+    betas  <- unlist(lapply(sols, function(x) x$par[2]))
+    taus   <- unlist(lapply(sols, function(x) ifelse(x$par[3]==0, 1e-10, x$par[3])))
+    params$alphas <-alphas
+    params$betas <- betas
+    params$taus <- taus
+    
+    cat("\n\nalphas (1:5): ", head(alphas,5))
+    cat("\nbetas (1:5) : ", head(betas,5))
+    cat("\ntaus (1:5):", head(taus,5))
+    
+    ###############################################################
+    # EVALUATION OF FULL LIKELIHOOD p(X, Z | \theta)
+    # this should be monotonically increasing
+    ###############################################################
+  
+    # Q (sum of component Q's). Should be monotonically increasing
+    likelihoods.Q[iter] <- sum(unlist(lapply(sols, function(x) x$value)))
+    
+    # entropy
+    #H <- sum(apply(responsibilities, 1, function(x) sum(x*log(x), na.rm=TRUE)), na.rm=TRUE)
+    H <- sum(responsibilities * log(responsibilities), na.rm=TRUE)
+    
+    # total lower bound L
+    like <- likelihoods.Q[iter] - H
+  
+    #like <- likelihood_Lumbreras2016(data_, params, responsibilities, pis)
+    #likes[iter] <- c(t(pis) %*% traces[iter,])
+    likelihoods.complete[iter] <- like # Q + H
+    
+    cat('\nCurrent likelihoods')
+    cat('\nQ:', likelihoods.Q[iter])
+    cat('\nK:', H)
+    cat('\nL:', like )
+    
+    
+    if(like < like.last) stop("Decreasing likelihood!")
+    
+    if(like == like.last){
+      cat('\n\nConverged!')
+      break
+    }else{
+      like.last <- like
+    } 
+
+    # Update pis
+    pis <- colSums(responsibilities)/nrow(responsibilities)
+  }
+
+  stopCluster(cl)
+  
+  # real user ids into the responsability matrix
+  rownames(responsibilities) <- user.realids
+  
+  list(alphas=alphas,
+       betas=betas,
+       taus=taus,
+       responsibilities=responsibilities,
+       pis = pis,
+       likelihoods = likelihoods.complete,
+       likelihoods.Q = likelihoods.Q)
+}
+
 
 
 #' Expectation-Maximization algorithm to find clusters and
@@ -355,6 +598,7 @@ estimation_Lumbreras2016plus <- function(data, params, niters=10){
     # nmkb is a little bit faster
     # sol <- nlminb(c(alphas[k],betas[k],taus[k]), cost.function,
     #              scale = 1, lower=c(0,0,0), upper=c(Inf, Inf, 1))
+>>>>>>> 77f2dccc581a2e305d374991d500b386bf49b3ad
     sols <- foreach(k=1:K, .packages=c('dfoptim'), 
                     .export=c('likelihood_post_plus', 'likelihood_Gomez2013_all_plus',
                               'Qopt_opt_plus')) %dopar% {
