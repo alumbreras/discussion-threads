@@ -1,4 +1,5 @@
 # Given a set of trees, estimate its parameters
+# (model Gomez 2013)
 # author: Alberto Lumbreras
 ################################################
 source('R/likelihood.r')

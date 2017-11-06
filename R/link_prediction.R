@@ -43,8 +43,6 @@ compare_link_prediction <- function(tree, params.lumbreras, params.gomez){
     like.gomez <- log(probs.gomez[chosen]) - log(sum(probs.gomez))
     ranking.gomez <- rank(-probs.gomez)[chosen] 
     
-    # Kumar 2010 (TODO. Need params.kumar)
-    
     #Time ellapsed between post and parent (or post and root)
     time.to.parent <- V(tree)$date[t+1] - V(tree)$date[chosen]
     time.to.root <- V(tree)$date[t+1] - V(tree)$date[1]

@@ -4,36 +4,6 @@
 library(igraph)
 library(dplyr)
 
-gen.thread.Gomez2011 <- function(n=100, alpha.root=1, alpha.c = 1, beta.root = 1){
-  # Generate synthetic thread according to Gomez 2011
-  # Args:
-  #    n: number of posts
-  #    alpha:  preferential attachement exponent
-  #    beta: root bias
-  g <- graph.empty(n=1)
-
-  # First post has no choice
-  g <- add_vertices(g, 1)
-  g <- add_edges(g, c(2,1))
-
-  for (i in 3:n){
-    alphas <- c(alpha.root, rep(alpha.c, i-2))
-    betas <- c(beta.root, rep(1, i-2))
-    popularities <- 1 + degree(g, mode="in")
-
-    # Probability of choosing every node (only one is chosen)
-    probs <- (betas*popularities)^alphas
-    probs <- probs/sum(probs)
-    j <- sample(1:length(probs), 1, prob=probs)
-
-    # Add new vertex attached to the chosen node
-    g <- add_vertices(g, 1)
-    g <- add_edges(g, c(i,j))
-  }
-  g
-}
-
-
 gen.thread.Gomez2013 <- function(n=100, alpha=1, beta = 1, tau=0.75){
   # Generate synthetic thread according to Gomez 2011
   # Args:
@@ -52,7 +22,7 @@ gen.thread.Gomez2013 <- function(n=100, alpha=1, beta = 1, tau=0.75){
     popularities <- 1 + degree(g, mode="in") # even root starts with degree 1
 
     # Probability of choosing every node (only one is chosen)
-    probs <- alpha*popularities + betas + tau^lags
+    probs <- alpha*popularities[1:(i-1)] + betas + tau^lags
     probs <- probs/sum(probs)
     j <- sample(1:length(probs), 1, prob=probs)
 
@@ -60,11 +30,187 @@ gen.thread.Gomez2013 <- function(n=100, alpha=1, beta = 1, tau=0.75){
     g <- add_vertices(g, 1)
     g <- add_edges(g, c(i,j))
   }
-  V(g)$user <- 1 # for compatibility with Lumbreras
+  #V(g)$user <- 1 # for compatibility with Lumbreras
   g
 }
 
-gen.thread.Lumbreras2016 <- function(n=100, z=c(1,2,3), user.freqs=rep(1,length(z)),
+# ' Here we need to pass the users order to check whether it is grandparent
+# ' params users users vector that must include the root
+gen.thread.Gomez2013plus <- function(users, alpha=1, beta = 1, tau=0.75, gamma=0.5){
+  n <- length(users)
+  g <- graph.empty(n=1)
+  #V(g)[1]$user <- users[1]
+  g <- set_vertex_attr(g, 'user', index = 1, users[1])
+  
+  
+  # First post has no choice
+  g <- add_vertices(g, 1, user=users[2]) # need to know the user root! :(
+  g <- add_edges(g, c(2,1))
+  
+  
+  popularities <- rep(1,n)
+  popularities[1] <- 2 # root has the initial one plus the first reply
+  
+  parents.authors <- rep(NA, n)
+  parents.authors[1] <- '-1' # root has no parent
+  parents.authors[2] <- users[1] # second post is always reply to root
+  
+  for (i in 3:n){
+    betas <- c(beta, rep(0, i-2))
+    lags <- (i-1):1
+    #popularities <- 1 + degree(g, mode="in") # even root starts with degree 1
+    
+    #replieds <- unlist(ego(g, 1, nodes=2:(i-1), mode='out', mindist=1))
+    #grandparents <- c(FALSE, (V(g)[replieds]$user==users[i])) # add the root, who replied to no one
+    grandparents <- (parents.authors[1:(i-1)] == users[i])
+    
+    # Probability of choosing every node (only one is chosen)
+    probs <- alpha*popularities[1:(i-1)] + betas + gamma*grandparents + tau^lags
+    probs <- probs/sum(probs)
+    j <- sample(1:length(probs), 1, prob=probs)
+    
+    popularities[j] <- popularities[j] + 1
+    parents.authors[i] <- users[j]
+    
+    # Add new vertex attached to the chosen node
+    g <- add_vertices(g, 1, user=users[i])
+    g <- add_edges(g, c(i,j))
+  }
+  g
+}
+
+
+
+#' Generates a tree given its posts authors
+#' and the estimated parameters of the model (Lumbreras 2016)
+#' @param params estimated model parameters
+#' @param users sequence of users (equals to tree size)
+#' @description Assumes that the identitity and cluster of users are known
+gen.thread.Lumbreras2016 <- function(users, alphas, betas, taus){
+  
+  # add a fake root so that the index is easier to understand
+  # i=1 -> root
+  # i=2 -> first reply, etc
+  #users <- c(NA, users) # removed since we include root in the users
+  alphas <- c(NA, alphas)
+  betas <- c(NA, betas)
+  taus <- c(NA, taus)
+  
+  n <- length(users)
+  if(n < 3) stop('Thread is too short')
+  
+  # First post has no choice
+  g <- graph.empty(n=2)
+  g <- add_edges(g, c(2,1))
+  
+  popularities <- rep(1,n)
+  popularities[1] <- 2 # root has the initial one plus the first reply
+  
+  for (i in 3:n){
+    
+    # Get post parameters
+    bs <- c(betas[i], rep(0, i-2))
+    lags <- (i-1):1
+    
+    #popularities <- 1 + degree(g, mode="in") # even root starts with degree 1
+    
+    # Probability of choosing every node (only one is chosen)
+    probs <- alphas[i]*popularities[1:(i-1)] + bs + taus[i]^lags
+    probs <- probs/sum(probs)
+    
+    j <- sample(1:length(probs), 1, prob=probs)
+    
+    # update metrics t avoid using igraph (slower) for that
+    popularities[j] <- popularities[j] + 1
+    
+    # Add new vertex attached to the chosen node
+    g <- add_vertices(g, 1)
+    g <- add_edges(g, c(i,j))
+  }
+  g
+}
+
+
+#' Generates a tree given its posts authors
+#' and the estimated parameters of the model (Lumbreras 2016)
+#' @param params estimated model parameters
+#' @param users sequence of users (equals to tree size)
+#' @description Assumes that the identitity and cluster of users are known
+gen.thread.Lumbreras2016plus <- function(users, alphas, betas, taus, gammas){
+  
+  # add a fake root so that the index is easier to understand
+  # i=1 -> root
+  # i=2 -> first reply, etc
+  #users <- c(NA, users) # removed since we include root in the users
+  alphas <- c(NA, alphas)
+  betas <- c(NA, betas)
+  taus <- c(NA, taus)
+  gammas <- c(NA, gammas)
+  
+  n <- length(users)
+  if(n < 3) stop('Thread is too short')
+  
+  # First post has no choice
+  #g <- graph.empty(n=2)
+  #g <- add_edges(g, c(2,1))
+  
+  g <- graph.empty(n=1)
+  #V(g)[1]$user <- users[1]
+  g <- set_vertex_attr(g, 'user', index = 1, users[1])
+  
+  g <- add_vertices(g, 1, user=users[2]) # need to know the user root! :(
+  g <- add_edges(g, c(2,1))
+  
+  popularities <- rep(1,n)
+  popularities[1] <- 2 # root has the initial one plus the first reply
+  
+  parents.authors <- rep(NA, n)
+  parents.authors[1] <- '-1' # root has no parent
+  parents.authors[2] <- users[1] # second post is always reply to root
+  
+  for (i in 3:n){
+    
+    # Get post parameters
+    bs <- c(betas[i], rep(0, i-2))
+    lags <- (i-1):1
+    #popularities <- 1 + degree(g, mode="in") # even root starts with degree 1
+    
+    #replieds <- unlist(ego(g, 1, nodes=2:(i-1), mode='out', mindist=1))
+    #grandparents <- c(FALSE, (V(g)[replieds]$user==users[i])) # add the root, who replied to no one
+    grandparents <- (parents.authors[1:(i-1)] == users[i])
+    
+    # Probability of choosing every node (only one is chosen)
+    probs <- alphas[i]*popularities[1:(i-1)] + bs + gammas[i]*grandparents + taus[i]^lags
+    probs <- probs/sum(probs)
+    
+    j <- sample(1:length(probs), 1, prob=probs)
+    
+    popularities[j] <- popularities[j] + 1
+    parents.authors[i] <- users[j]
+    
+    # Add new vertex attached to the chosen node
+    g <- add_vertices(g, 1, user=users[i])
+    g <- add_edges(g, c(i,j))
+  }
+  g
+}
+
+
+
+
+#  Build a real graph tree from a vector of parents
+# 'params parent parents vector 2:N
+tree_from_parents_vector <- function(parents){
+  size <- length(parents)+1
+  g <- graph.empty(n=size)
+  edges <- t(rbind(2:size, parents))
+  graph_from_edgelist(edges)
+}
+  
+
+
+
+gen.thread.Lumbreras2016_deprecated <- function(n=100, z=c(1,2,3), user.freqs=rep(1,length(z)),
                                      alphas = c(1,2,3), betas = c(1,2,3), taus = c(0.25, 0.5, 0.75),
                                      user.samples){
   # Generate threads like in Gomez 2013 but from a mixture model where users

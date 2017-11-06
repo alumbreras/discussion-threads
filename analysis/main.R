@@ -1,11 +1,26 @@
+# Main script
+# Compute parameters of all the models,
+# compute their likelihood and their raking precission
+
 # Compares Gomez 2013 and Lumbreras 2016 on a reddit forum
 # author: Alberto Lumbreras
 ###########################################################
-# Load dataframe representation of trees
-#subforum <- 'podemos'
-subforum <- 'gameofthrones'
+source('R/datasets.R')
+source('R/estimators.R')
+source('R/extract_from_db.R')
+source('R/likelihood.R')
+source('R/plot_structural_properties.R')
+source('R/plotting.R')
+source('R/thread_generators.R')
+source('R/link_prediction.R')
 
-trees <- load_trees(forum="reddit", subforum=subforum)#[1:1000]
+################################################################################
+################################################################################
+
+subforum <- 'MachineLearning'
+
+
+trees <- load_trees(forum="reddit", subforum=subforum, min.size=10)#[1:1000]
 df.trees <- trees_to_dataframe(trees)
 
 if(FALSE){
@@ -13,6 +28,8 @@ if(FALSE){
   save(df.trees, file=paste0('data/df.trees.', subforum, '.rda'))
   load(paste0('data/trees.', subforum, '.rda'))
   load(paste0('data/df.trees.', subforum, '.rda'))
+  
+  df.trees <- readRDS("mymodel.rds")
 }
 
 # Training / Test
