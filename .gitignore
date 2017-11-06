@@ -6,6 +6,7 @@
 *~
 results.md
 *.png
+*.rda
 
 # Large files such as database, or big R objects
 data/
